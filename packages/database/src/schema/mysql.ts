@@ -96,16 +96,8 @@ export const member = mysqlTable(
     userId: varchar("user_id", { length: 36 })
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    role: mysqlEnum("role", [
-      "platform_super_admin",
-      "organization_owner",
-      "organization_admin",
-      "technician",
-      "viewer",
-      "customer_user",
-    ])
-      .notNull()
-      .default("viewer"),
+    // varchar: Better Auth uses owner/admin/member; app maps to PlatformRole in session layer.
+    role: varchar("role", { length: 64 }).notNull().default("organization_owner"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow().onUpdateNow(),
   },

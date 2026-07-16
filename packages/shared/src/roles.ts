@@ -17,3 +17,22 @@ export const ROLE_LABELS: Record<PlatformRole, { sl: string; en: string }> = {
   viewer: { sl: "Pregledovalec", en: "Viewer" },
   customer_user: { sl: "Uporabnik stranke", en: "Customer User" },
 };
+
+/** Better Auth default org roles → SecurityDesk platform roles. */
+const BETTER_AUTH_ROLE_MAP: Record<string, PlatformRole> = {
+  owner: "organization_owner",
+  admin: "organization_admin",
+  member: "technician",
+};
+
+export function mapMemberRole(raw: string | null | undefined): PlatformRole | null {
+  if (!raw?.trim()) return null;
+  const value = raw.trim();
+  if (value in BETTER_AUTH_ROLE_MAP) {
+    return BETTER_AUTH_ROLE_MAP[value]!;
+  }
+  if ((PLATFORM_ROLES as readonly string[]).includes(value)) {
+    return value as PlatformRole;
+  }
+  return null;
+}

@@ -56,7 +56,7 @@ export const dictionaries = {
       offline: "Offline naprave",
       noOrg: "Še nimate aktivne organizacije",
       noOrgHint: "Ustvarite organizacijo, da začnete uporabljati platformo.",
-      phaseNote: "Faza 1: osnova platforme. Moduli se dodajajo v naslednjih fazah.",
+      phaseNote: "Aktivni moduli po paketu organizacije. Navigacija na levi prikaže module glede na vlogo in paket.",
     },
     common: {
       loading: "Nalaganje…",
@@ -128,7 +128,7 @@ export const dictionaries = {
       offline: "Offline devices",
       noOrg: "No active organization",
       noOrgHint: "Create an organization to start using the platform.",
-      phaseNote: "Phase 1: platform foundation. Modules arrive in later phases.",
+      phaseNote: "Active modules depend on your organization plan. The left navigation shows modules by role and plan.",
     },
     common: {
       loading: "Loading…",

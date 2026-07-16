@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
+import { and, eq } from "drizzle-orm";
 import { APIError } from "better-auth/api";
 import { getDb } from "@securitydesk/database";
 import { PLANS } from "@securitydesk/shared";
@@ -63,6 +64,37 @@ export async function createOrganizationAction(name: string): Promise<CreateOrgR
 
     await bootstrapOrganizationDefaults(organization.id);
 
+    // Better Auth may fail to persist membership when DB role enum rejects "owner".
+    // Always ensure the creator is organization_owner.
+    const { db, schema } = getDb();
+    const [existingMember] = await db
+      .select({ id: schema.member.id })
+      .from(schema.member)
+      .where(
+        and(
+          eq(schema.member.organizationId, organization.id),
+          eq(schema.member.userId, session.user.id),
+        ),
+      )
+      .limit(1);
+
+    if (!existingMember) {
+      const now = new Date();
+      await db.insert(schema.member).values({
+        id: randomUUID(),
+        organizationId: organization.id,
+        userId: session.user.id,
+        role: "organization_owner",
+        createdAt: now,
+        updatedAt: now,
+      });
+    } else {
+      await db
+        .update(schema.member)
+        .set({ role: "organization_owner", updatedAt: new Date() })
+        .where(eq(schema.member.id, existingMember.id));
+    }
+
     return { ok: true, organizationId: organization.id };
   } catch (error: unknown) {
     if (error instanceof APIError) {
@@ -81,17 +113,25 @@ async function bootstrapOrganizationDefaults(organizationId: string) {
   const { db, schema } = getDb();
   const now = new Date();
 
+  // Integrator during active multi-module development so all nav modules are visible.
+  const planId = "integrator" as const;
+
+  await db
+    .update(schema.organization)
+    .set({ planId, updatedAt: now })
+    .where(eq(schema.organization.id, organizationId));
+
   await db.insert(schema.subscription).values({
     id: randomUUID(),
     organizationId,
-    planId: "starter",
+    planId,
     status: "active",
     currentPeriodStart: now,
     createdAt: now,
     updatedAt: now,
   });
 
-  for (const moduleId of PLANS.starter.limits.modules) {
+  for (const moduleId of PLANS[planId].limits.modules) {
     await db.insert(schema.moduleEntitlement).values({
       id: randomUUID(),
       organizationId,

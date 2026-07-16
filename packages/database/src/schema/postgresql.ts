@@ -118,7 +118,9 @@ export const member = pgTable(
     userId: varchar("user_id", { length: 36 })
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    role: memberRoleEnum("role").notNull().default("viewer"),
+    // varchar: Better Auth uses owner/admin/member; app maps to PlatformRole in session layer.
+    // Keep memberRoleEnum in schema file for backwards-compatible PG installs; column is varchar.
+    role: varchar("role", { length: 64 }).notNull().default("organization_owner"),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

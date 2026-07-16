@@ -36,6 +36,13 @@
       "when": 1784232484539,
       "tag": "0004_minor_puma",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1784234400000,
+      "tag": "0005_member_role_varchar",
+      "breakpoints": true
     }
   ]
 }
