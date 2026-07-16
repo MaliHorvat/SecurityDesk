@@ -16,6 +16,10 @@ export * as serviceMysql from "./service-mysql";
 export * as servicePostgresql from "./service-postgresql";
 export * as networkMysql from "./network-mysql";
 export * as networkPostgresql from "./network-postgresql";
+export * as configVaultMysql from "./config-vault-mysql";
+export * as configVaultPostgresql from "./config-vault-postgresql";
+export * as firmwareGuardMysql from "./firmware-guard-mysql";
+export * as firmwareGuardPostgresql from "./firmware-guard-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -66,3 +70,12 @@ export {
   networkPort,
   networkIpAssignment,
 } from "./network-mysql";
+
+export { configurationBackup } from "./config-vault-mysql";
+
+export {
+  firmwareAdvisory,
+  firmwareAffectedModel,
+  firmwareMatch,
+  remediationCampaign,
+} from "./firmware-guard-mysql";

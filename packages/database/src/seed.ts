@@ -203,9 +203,13 @@ async function seed() {
     { name: "Kamera offline demo", ip: "192.168.10.99", siteId: site1, type: camType, mfr: hikId },
   ];
 
+  const seededDevices: Array<{ id: string; name: string; type: string | null; mfr: string | null }> = [];
+
   for (const d of devices) {
+    const id = randomUUID();
+    seededDevices.push({ id, name: d.name, type: d.type, mfr: d.mfr });
     await db.insert(schema.device).values({
-      id: randomUUID(),
+      id,
       organizationId: orgId,
       customerId: d.siteId === site3 ? customerB : customerA,
       siteId: d.siteId,
@@ -214,11 +218,75 @@ async function seed() {
       manufacturerId: d.mfr,
       name: d.name,
       ipAddress: d.ip,
+      firmware: d.name.includes("Kamera") ? "10.12.1" : d.name.includes("Cisco") ? "17.9.4a" : null,
       status: d.name.includes("offline") ? "inactive" : "active",
       qrToken: createQrToken(),
       createdAt: now,
       updatedAt: now,
       version: 1,
+    });
+  }
+
+  const firstCam = seededDevices.find((d) => d.name === "Kamera skladišče 1");
+  if (firstCam && process.env.ENCRYPTION_KEY) {
+    const { encryptSecret, sha256Hex } = await import("@securitydesk/shared/crypto");
+    const configText = "# demo switch config\nhostname SW-01\ninterface Gi1/0/1\n description Camera\n";
+    await db.insert(schema.configurationBackup).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      deviceId: firstCam.id,
+      version: 1,
+      source: "manual",
+      label: "Initial backup",
+      note: "Demo ConfigVault zapis",
+      checksumSha256: sha256Hex(configText),
+      encryptedSecret: encryptSecret(configText, process.env.ENCRYPTION_KEY),
+      lastCheckedAt: now,
+      isLastChecked: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  const advisoryId = randomUUID();
+  await db.insert(schema.firmwareAdvisory).values({
+    id: advisoryId,
+    organizationId: orgId,
+    title: "Axis kamera – kritična ranljivost FW 10.12.1",
+    vendor: "Axis",
+    description: "Demo advisory za FirmwareGuard.",
+    severity: "high",
+    recommendedAction: "Nadgradnja na 10.12.2 ali novejše.",
+    officialUrl: "https://example.com/advisory",
+    status: "active",
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  await db.insert(schema.firmwareAffectedModel).values({
+    id: randomUUID(),
+    organizationId: orgId,
+    advisoryId,
+    manufacturerId: axisId,
+    deviceTypeId: camType,
+    versionPattern: "10.12.1",
+    matchStrategy: "equals",
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  for (const d of seededDevices.filter((x) => x.mfr === axisId && x.type === camType)) {
+    await db.insert(schema.firmwareMatch).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      advisoryId,
+      deviceId: d.id,
+      matchedFirmware: "10.12.1",
+      matchStrategy: "equals",
+      status: "open",
+      checkedAt: now,
+      createdAt: now,
+      updatedAt: now,
     });
   }
 
@@ -377,7 +445,7 @@ async function seed() {
 
   console.log("Seed dokončan.");
   console.log(`Organizacija: Aktiva Demo (${orgId})`);
-  console.log("2 stranki, 3 objekti, ~20 naprav, servis, predaja, Cisco stikalo (PortMap).");
+  console.log("2 stranki, 3 objekti, ~20 naprav, servis, predaja, PortMap, ConfigVault, FirmwareGuard.");
   console.log("Naslednji korak: registracija v aplikaciji in povezava z organizacijo / ročni preizkus CRUD.");
   process.exit(0);
 }

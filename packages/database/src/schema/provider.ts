@@ -8,6 +8,10 @@ import * as serviceMysql from "./service-mysql";
 import * as servicePostgresql from "./service-postgresql";
 import * as networkMysql from "./network-mysql";
 import * as networkPostgresql from "./network-postgresql";
+import * as configVaultMysql from "./config-vault-mysql";
+import * as configVaultPostgresql from "./config-vault-postgresql";
+import * as firmwareGuardMysql from "./firmware-guard-mysql";
+import * as firmwareGuardPostgresql from "./firmware-guard-postgresql";
 
 export type DbProvider = "mysql" | "postgresql";
 
@@ -24,6 +28,8 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
       ...cctvPostgresql,
       ...servicePostgresql,
       ...networkPostgresql,
+      ...configVaultPostgresql,
+      ...firmwareGuardPostgresql,
     };
   }
   return {
@@ -32,5 +38,7 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
     ...cctvMysql,
     ...serviceMysql,
     ...networkMysql,
+    ...configVaultMysql,
+    ...firmwareGuardMysql,
   };
 }
