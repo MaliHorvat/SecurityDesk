@@ -12,7 +12,7 @@ Modularna SaaS platforma za podjetja, ki načrtujejo, nameščajo, upravljajo in
 | SecurityDesk (stranke, objekti, naprave) | **Faza 2 – aktivna** |
 | CCTV Project Designer | **Faza 3 – aktivna** |
 | Servis + HandoverHub | **Faza 4 – aktivna** |
-| PortMap AI | Faza 5 |
+| PortMap AI | **Faza 5 – aktivna** |
 | ConfigVault + FirmwareGuard | Faza 6 |
 | Lokalni agent + MultiVMS | Faza 7 |
 | CameraDeploy | Faza 8 |

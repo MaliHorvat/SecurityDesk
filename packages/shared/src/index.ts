@@ -5,5 +5,6 @@ export * from "./navigation";
 export * from "./securitydesk";
 export * from "./cctv-calculator";
 export * from "./service";
+export * from "./network";
 // crypto (node:crypto) is exported only via "@securitydesk/shared/crypto"
 // so client bundles never pull Node builtins.

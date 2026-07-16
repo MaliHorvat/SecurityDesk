@@ -12,11 +12,13 @@ import * as mysqlSchema from "./schema/mysql";
 import * as securitydeskMysql from "./schema/securitydesk-mysql";
 import * as cctvMysql from "./schema/cctv-mysql";
 import * as serviceMysql from "./schema/service-mysql";
+import * as networkMysql from "./schema/network-mysql";
 
 type FullSchema = typeof mysqlSchema &
   typeof securitydeskMysql &
   typeof cctvMysql &
-  typeof serviceMysql;
+  typeof serviceMysql &
+  typeof networkMysql;
 
 /**
  * Dual MySQL/PostgreSQL client.

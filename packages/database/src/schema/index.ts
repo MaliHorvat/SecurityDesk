@@ -14,6 +14,8 @@ export * as cctvMysql from "./cctv-mysql";
 export * as cctvPostgresql from "./cctv-postgresql";
 export * as serviceMysql from "./service-mysql";
 export * as servicePostgresql from "./service-postgresql";
+export * as networkMysql from "./network-mysql";
+export * as networkPostgresql from "./network-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -57,3 +59,10 @@ export {
   handoverDocument,
   handoverSignature,
 } from "./service-mysql";
+
+export {
+  networkSwitch,
+  networkVlan,
+  networkPort,
+  networkIpAssignment,
+} from "./network-mysql";

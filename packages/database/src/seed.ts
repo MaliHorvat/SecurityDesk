@@ -279,6 +279,90 @@ async function seed() {
     });
   }
 
+  const switchId = randomUUID();
+  await db.insert(schema.networkSwitch).values({
+    id: switchId,
+    organizationId: orgId,
+    customerId: customerA,
+    siteId: site1,
+    name: "Cisco SW-01 PortMap",
+    manufacturer: "Cisco",
+    model: "C9200-24P",
+    ipAddress: "192.168.10.1",
+    portCount: 24,
+    poeBudgetWatts: 370,
+    location: "Strežniška",
+    rack: "R1",
+    uPosition: "U12",
+    firmware: "17.9.4a",
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  const seedPorts = [
+    { n: 1, label: "Kamera skladišče 1", vlan: 101, poe: 8.4 },
+    { n: 2, label: "Kamera rampa", vlan: 101, poe: 10.1 },
+    { n: 3, label: "2N IP Verso", vlan: 120, poe: 6.8 },
+    { n: 24, label: "Uplink do jedra", vlan: null, poe: 0, role: "uplink" as const },
+  ];
+
+  for (let n = 1; n <= 24; n++) {
+    const seeded = seedPorts.find((p) => p.n === n);
+    await db.insert(schema.networkPort).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      switchId,
+      portNumber: n,
+      name: `Gi1/0/${n}`,
+      description: seeded?.label ?? null,
+      status: seeded ? "up" : "unknown",
+      role: seeded?.role ?? (seeded ? "access" : "unused"),
+      poeState: seeded && seeded.poe > 0 ? "on" : "off",
+      poeWatts: seeded?.poe ?? 0,
+      accessVlan: seeded?.vlan ?? null,
+      connectedDeviceLabel: seeded && !seeded.role ? seeded.label : null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
+  await db.insert(schema.networkVlan).values([
+    {
+      id: randomUUID(),
+      organizationId: orgId,
+      siteId: site1,
+      vlanId: 101,
+      name: "CCTV",
+      subnetCidr: "192.168.10.0/24",
+      gateway: "192.168.10.1",
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: randomUUID(),
+      organizationId: orgId,
+      siteId: site1,
+      vlanId: 120,
+      name: "Dostop",
+      subnetCidr: "192.168.120.0/24",
+      gateway: "192.168.120.1",
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
+
+  await db.insert(schema.networkIpAssignment).values({
+    id: randomUUID(),
+    organizationId: orgId,
+    siteId: site1,
+    vlanId: 101,
+    ipAddress: "192.168.10.11",
+    hostname: "cam-warehouse-1",
+    notes: "Kamera skladišče 1",
+    createdAt: now,
+    updatedAt: now,
+  });
+
   await db.insert(schema.dashboardStat).values({
     id: randomUUID(),
     organizationId: orgId,
@@ -293,7 +377,7 @@ async function seed() {
 
   console.log("Seed dokončan.");
   console.log(`Organizacija: Aktiva Demo (${orgId})`);
-  console.log("2 stranki, 3 objekti, ~20 naprav, odprt servisni zahtevek, predajni paket.");
+  console.log("2 stranki, 3 objekti, ~20 naprav, servis, predaja, Cisco stikalo (PortMap).");
   console.log("Naslednji korak: registracija v aplikaciji in povezava z organizacijo / ročni preizkus CRUD.");
   process.exit(0);
 }
