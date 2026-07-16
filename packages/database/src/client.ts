@@ -10,8 +10,9 @@ import {
 import { getSchema, type DbProvider } from "./schema/index";
 import * as mysqlSchema from "./schema/mysql";
 import * as securitydeskMysql from "./schema/securitydesk-mysql";
+import * as cctvMysql from "./schema/cctv-mysql";
 
-type FullSchema = typeof mysqlSchema & typeof securitydeskMysql;
+type FullSchema = typeof mysqlSchema & typeof securitydeskMysql & typeof cctvMysql;
 
 /**
  * Dual MySQL/PostgreSQL client.

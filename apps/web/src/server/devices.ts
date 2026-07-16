@@ -8,13 +8,13 @@ import {
   createQrToken,
   deviceInputSchema,
   emptyToNull,
-  encryptSecret,
   PLANS,
   previewDeviceImport,
   toCsv,
   type DeviceInput,
   type DeviceImportPreview,
 } from "@securitydesk/shared";
+import { encryptSecret } from "@securitydesk/shared/crypto";
 import { requireOrgSession } from "@/lib/org-context";
 import {
   ensureDeviceType,

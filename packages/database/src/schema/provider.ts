@@ -2,6 +2,8 @@ import * as mysqlSchema from "./mysql";
 import * as postgresqlSchema from "./postgresql";
 import * as securitydeskMysql from "./securitydesk-mysql";
 import * as securitydeskPostgresql from "./securitydesk-postgresql";
+import * as cctvMysql from "./cctv-mysql";
+import * as cctvPostgresql from "./cctv-postgresql";
 
 export type DbProvider = "mysql" | "postgresql";
 
@@ -12,7 +14,7 @@ export function getProviderFromEnv(): DbProvider {
 
 export function getSchema(provider: DbProvider = getProviderFromEnv()) {
   if (provider === "postgresql") {
-    return { ...postgresqlSchema, ...securitydeskPostgresql };
+    return { ...postgresqlSchema, ...securitydeskPostgresql, ...cctvPostgresql };
   }
-  return { ...mysqlSchema, ...securitydeskMysql };
+  return { ...mysqlSchema, ...securitydeskMysql, ...cctvMysql };
 }

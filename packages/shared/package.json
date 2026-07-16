@@ -11,7 +11,8 @@
     "./roles": "./src/roles.ts",
     "./crypto": "./src/crypto.ts",
     "./plans": "./src/plans.ts",
-    "./securitydesk": "./src/securitydesk.ts"
+    "./securitydesk": "./src/securitydesk.ts",
+    "./cctv-calculator": "./src/cctv-calculator.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
