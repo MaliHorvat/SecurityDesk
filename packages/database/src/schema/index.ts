@@ -8,6 +8,8 @@ export { getProviderFromEnv, getSchema } from "./provider";
 
 export * as mysql from "./mysql";
 export * as postgresql from "./postgresql";
+export * as securitydeskMysql from "./securitydesk-mysql";
+export * as securitydeskPostgresql from "./securitydesk-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -24,3 +26,18 @@ export {
   organizationSettings,
   dashboardStat,
 } from "./mysql";
+
+export {
+  customer,
+  customerContact,
+  site,
+  building,
+  floor,
+  room,
+  manufacturer,
+  deviceType,
+  device,
+  deviceCredential,
+  siteDocument,
+  deviceDocument,
+} from "./securitydesk-mysql";

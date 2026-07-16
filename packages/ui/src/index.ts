@@ -6,3 +6,6 @@ export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 export { Badge } from "./components/badge";
 export { Skeleton } from "./components/skeleton";
 export { EmptyState } from "./components/empty-state";
+export { Textarea } from "./components/textarea";
+export { Select } from "./components/select";
+

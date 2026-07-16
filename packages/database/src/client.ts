@@ -9,6 +9,9 @@ import {
 } from "@securitydesk/config/env";
 import { getSchema, type DbProvider } from "./schema/index";
 import * as mysqlSchema from "./schema/mysql";
+import * as securitydeskMysql from "./schema/securitydesk-mysql";
+
+type FullSchema = typeof mysqlSchema & typeof securitydeskMysql;
 
 /**
  * Dual MySQL/PostgreSQL client.
@@ -19,7 +22,7 @@ export type AppDatabase = {
   // Dual-dialect Drizzle client — keep untyped at the boundary to avoid MySQL|PG union call errors.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   db: any;
-  schema: typeof mysqlSchema;
+  schema: FullSchema;
   provider: DbProvider;
   client: unknown;
 };
@@ -62,7 +65,7 @@ export function createDb(options?: { url?: string; provider?: DbProvider }): App
   const env = loadDbEnv();
   const provider = options?.provider ?? env.DB_PROVIDER;
   const url = options?.url ?? getConnectionUrl();
-  const schema = getSchema(provider) as typeof mysqlSchema;
+  const schema = getSchema(provider) as FullSchema;
 
   if (provider === "postgresql") {
     const client = postgres(url, {

@@ -10,7 +10,8 @@
     "./permissions": "./src/permissions.ts",
     "./roles": "./src/roles.ts",
     "./crypto": "./src/crypto.ts",
-    "./plans": "./src/plans.ts"
+    "./plans": "./src/plans.ts",
+    "./securitydesk": "./src/securitydesk.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

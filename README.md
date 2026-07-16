@@ -9,7 +9,7 @@ Modularna SaaS platforma za podjetja, ki načrtujejo, nameščajo, upravljajo in
 | Modul | Status |
 |-------|--------|
 | Osnova (auth, org, vloge, dashboard) | **Faza 1 – aktivna** |
-| SecurityDesk (stranke, objekti, naprave) | Faza 2 |
+| SecurityDesk (stranke, objekti, naprave) | **Faza 2 – aktivna** |
 | CCTV Project Designer | Faza 3 |
 | Servis + HandoverHub | Faza 4 |
 | PortMap AI | Faza 5 |
