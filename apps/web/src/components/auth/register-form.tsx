@@ -20,11 +20,23 @@ export function RegisterForm({ labels, appName }: { labels: Dictionary["auth"]; 
     setLoading(true);
     setError(null);
     const result = await authClient.signUp.email({ name, email, password });
-    setLoading(false);
     if (result.error) {
+      setLoading(false);
       setError(result.error.message || "Registracija ni uspela.");
       return;
     }
+
+    // Ensure session cookie is established (some setups don't auto-sign-in reliably).
+    const signedIn = await authClient.signIn.email({ email, password });
+    setLoading(false);
+    if (signedIn.error) {
+      setError(
+        "Račun je ustvarjen, prijava pa ni uspela. Prijavite se ročno, nato ustvarite organizacijo.",
+      );
+      router.push("/login?next=/onboarding");
+      return;
+    }
+
     router.push("/onboarding");
     router.refresh();
   }

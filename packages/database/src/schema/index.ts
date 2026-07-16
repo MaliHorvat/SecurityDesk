@@ -12,6 +12,8 @@ export * as securitydeskMysql from "./securitydesk-mysql";
 export * as securitydeskPostgresql from "./securitydesk-postgresql";
 export * as cctvMysql from "./cctv-mysql";
 export * as cctvPostgresql from "./cctv-postgresql";
+export * as serviceMysql from "./service-mysql";
+export * as servicePostgresql from "./service-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -45,3 +47,13 @@ export {
 } from "./securitydesk-mysql";
 
 export { cctvProject, cctvScenario } from "./cctv-mysql";
+
+export {
+  serviceTicket,
+  workOrder,
+  serviceReport,
+  handoverPackage,
+  handoverChecklistItem,
+  handoverDocument,
+  handoverSignature,
+} from "./service-mysql";

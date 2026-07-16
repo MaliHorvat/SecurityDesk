@@ -11,7 +11,7 @@ Modularna SaaS platforma za podjetja, ki načrtujejo, nameščajo, upravljajo in
 | Osnova (auth, org, vloge, dashboard) | **Faza 1 – aktivna** |
 | SecurityDesk (stranke, objekti, naprave) | **Faza 2 – aktivna** |
 | CCTV Project Designer | **Faza 3 – aktivna** |
-| Servis + HandoverHub | Faza 4 |
+| Servis + HandoverHub | **Faza 4 – aktivna** |
 | PortMap AI | Faza 5 |
 | ConfigVault + FirmwareGuard | Faza 6 |
 | Lokalni agent + MultiVMS | Faza 7 |

@@ -14,8 +14,14 @@ export default defineConfig({
           "./src/schema/postgresql.ts",
           "./src/schema/securitydesk-postgresql.ts",
           "./src/schema/cctv-postgresql.ts",
+          "./src/schema/service-postgresql.ts",
         ]
-      : ["./src/schema/mysql.ts", "./src/schema/securitydesk-mysql.ts", "./src/schema/cctv-mysql.ts"],
+      : [
+          "./src/schema/mysql.ts",
+          "./src/schema/securitydesk-mysql.ts",
+          "./src/schema/cctv-mysql.ts",
+          "./src/schema/service-mysql.ts",
+        ],
   out: `./drizzle/${provider}`,
   dialect: provider === "postgresql" ? "postgresql" : "mysql",
   dbCredentials: {

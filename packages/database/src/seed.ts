@@ -222,6 +222,63 @@ async function seed() {
     });
   }
 
+  const ticketId = randomUUID();
+  await db.insert(schema.serviceTicket).values({
+    id: ticketId,
+    organizationId: orgId,
+    customerId: customerA,
+    siteId: site1,
+    title: "Kamera offline – vhod",
+    description: "Kamera na vhodu ne odgovarja na ping. Stranka poroča o črnem zaslonu v VMS.",
+    category: "cctv",
+    priority: "high",
+    status: "open",
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  const handoverId = randomUUID();
+  await db.insert(schema.handoverPackage).values({
+    id: handoverId,
+    organizationId: orgId,
+    customerId: customerA,
+    siteId: site1,
+    title: "Predaja – Skladišče A",
+    description: "Digitalna predaja videonadzornega sistema.",
+    status: "draft",
+    deviceSummary: "NVR glavni\nKamera vhod\nKamera skladišče",
+    ipTable: "192.168.10.10 · NVR\n192.168.10.11 · Kamera vhod",
+    serviceContacts: "Servis: +386 1 234 5678",
+    publicToken: randomUUID().replace(/-/g, ""),
+    version: 1,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  const checklist = [
+    { key: "system_installed", label: "Sistem je nameščen" },
+    { key: "devices_tested", label: "Naprave so testirane" },
+    { key: "recording_works", label: "Snemanje deluje" },
+    { key: "time_synced", label: "Čas je sinhroniziran" },
+    { key: "users_ready", label: "Uporabniki so pripravljeni" },
+    { key: "customer_instructions", label: "Stranka je prejela navodila" },
+    { key: "passwords_secure", label: "Gesla so bila predana po varnem kanalu" },
+    { key: "training_done", label: "Usposabljanje je izvedeno" },
+  ];
+  for (const [index, item] of checklist.entries()) {
+    await db.insert(schema.handoverChecklistItem).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      packageId: handoverId,
+      itemKey: item.key,
+      label: item.label,
+      checked: index < 2,
+      sortOrder: index,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   await db.insert(schema.dashboardStat).values({
     id: randomUUID(),
     organizationId: orgId,
@@ -236,7 +293,7 @@ async function seed() {
 
   console.log("Seed dokončan.");
   console.log(`Organizacija: Aktiva Demo (${orgId})`);
-  console.log("2 stranki, 3 objekti, ~20 naprav.");
+  console.log("2 stranki, 3 objekti, ~20 naprav, odprt servisni zahtevek, predajni paket.");
   console.log("Naslednji korak: registracija v aplikaciji in povezava z organizacijo / ročni preizkus CRUD.");
   process.exit(0);
 }

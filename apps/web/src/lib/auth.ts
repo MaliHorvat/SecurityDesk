@@ -61,7 +61,8 @@ function createAuth() {
     plugins: [
       organization({
         allowUserToCreateOrganization: true,
-        creatorRole: "organization_owner",
+        // Better Auth default role name; mapped to organization_owner in app session layer.
+        creatorRole: "owner",
         membershipLimit: 100,
         invitationExpiresIn: 60 * 60 * 48,
         sendInvitationEmail: async (data) => {

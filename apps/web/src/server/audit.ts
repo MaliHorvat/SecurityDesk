@@ -25,7 +25,7 @@ export async function writeAuditLog(input: {
 
 export async function refreshDashboardStats(organizationId: string) {
   const { db, schema } = getDb();
-  const [[customers], [sites], [devices]] = await Promise.all([
+  const [[customers], [sites], [devices], [tickets]] = await Promise.all([
     db
       .select({ count: sql<number>`count(*)` })
       .from(schema.customer)
@@ -38,11 +38,22 @@ export async function refreshDashboardStats(organizationId: string) {
       .select({ count: sql<number>`count(*)` })
       .from(schema.device)
       .where(and(eq(schema.device.organizationId, organizationId), isNull(schema.device.deletedAt))),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(schema.serviceTicket)
+      .where(
+        and(
+          eq(schema.serviceTicket.organizationId, organizationId),
+          isNull(schema.serviceTicket.deletedAt),
+          sql`${schema.serviceTicket.status} IN ('open', 'in_progress', 'waiting_customer')`,
+        ),
+      ),
   ]);
 
   const customersCount = Number(customers?.count ?? 0);
   const sitesCount = Number(sites?.count ?? 0);
   const devicesCount = Number(devices?.count ?? 0);
+  const openTicketsCount = Number(tickets?.count ?? 0);
 
   const existing = await db
     .select()
@@ -57,6 +68,7 @@ export async function refreshDashboardStats(organizationId: string) {
         customersCount,
         sitesCount,
         devicesCount,
+        openTicketsCount,
         updatedAt: new Date(),
       })
       .where(eq(schema.dashboardStat.id, existing[0].id));
@@ -67,7 +79,7 @@ export async function refreshDashboardStats(organizationId: string) {
       customersCount,
       sitesCount,
       devicesCount,
-      openTicketsCount: 0,
+      openTicketsCount,
       onlineDevicesCount: 0,
       offlineDevicesCount: 0,
       updatedAt: new Date(),
