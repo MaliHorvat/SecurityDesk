@@ -1,0 +1,162 @@
+export type Dictionary = {
+  brandTagline: string;
+  nav: Record<string, string>;
+  auth: Record<string, string>;
+  dashboard: Record<string, string>;
+  common: Record<string, string>;
+  settings: Record<string, string>;
+  comingSoon: Record<string, string>;
+};
+
+export const dictionaries = {
+  sl: {
+    brandTagline: "Modularna platforma za varnostne in tehnične sisteme",
+    nav: {
+      dashboard: "Nadzorna plošča",
+      customers: "Stranke",
+      sites: "Objekti",
+      devices: "Naprave",
+      projects: "Projekti",
+      cameraDeploy: "CameraDeploy",
+      network: "Omrežje",
+      configVault: "ConfigVault",
+      firmware: "FirmwareGuard",
+      service: "Servis",
+      handover: "Predaja",
+      monitoring: "Monitoring",
+      ai: "AI pomočnik",
+      reports: "Poročila",
+      settings: "Nastavitve",
+    },
+    auth: {
+      login: "Prijava",
+      register: "Registracija",
+      logout: "Odjava",
+      email: "E-pošta",
+      password: "Geslo",
+      name: "Ime in priimek",
+      forgotPassword: "Pozabljeno geslo",
+      resetPassword: "Ponastavi geslo",
+      noAccount: "Še nimate računa?",
+      hasAccount: "Že imate račun?",
+      createAccount: "Ustvari račun",
+      signIn: "Prijavi se",
+      sendReset: "Pošlji povezavo",
+      orgName: "Ime organizacije",
+      createOrg: "Ustvari organizacijo",
+    },
+    dashboard: {
+      title: "Nadzorna plošča",
+      welcome: "Dobrodošli",
+      customers: "Stranke",
+      sites: "Objekti",
+      devices: "Naprave",
+      openTickets: "Odprti zahtevki",
+      online: "Online naprave",
+      offline: "Offline naprave",
+      noOrg: "Še nimate aktivne organizacije",
+      noOrgHint: "Ustvarite organizacijo, da začnete uporabljati platformo.",
+      phaseNote: "Faza 1: osnova platforme. Moduli se dodajajo v naslednjih fazah.",
+    },
+    common: {
+      loading: "Nalaganje…",
+      save: "Shrani",
+      cancel: "Prekliči",
+      error: "Prišlo je do napake",
+      success: "Uspešno",
+      search: "Iskanje",
+      actions: "Dejanja",
+      darkMode: "Temni način",
+      lightMode: "Svetli način",
+    },
+    settings: {
+      title: "Nastavitve",
+      organization: "Organizacija",
+      users: "Uporabniki",
+      billing: "Naročnina",
+      security: "Varnost",
+    },
+    comingSoon: {
+      title: "Modul v pripravi",
+      description: "Ta modul bo na voljo v naslednji fazi razvoja. Osnova platforme je že aktivna.",
+    },
+  } satisfies Dictionary,
+  en: {
+    brandTagline: "Modular platform for security and technical systems",
+    nav: {
+      dashboard: "Dashboard",
+      customers: "Customers",
+      sites: "Sites",
+      devices: "Devices",
+      projects: "Projects",
+      cameraDeploy: "CameraDeploy",
+      network: "Network",
+      configVault: "ConfigVault",
+      firmware: "FirmwareGuard",
+      service: "Service",
+      handover: "Handover",
+      monitoring: "Monitoring",
+      ai: "AI Assistant",
+      reports: "Reports",
+      settings: "Settings",
+    },
+    auth: {
+      login: "Sign in",
+      register: "Register",
+      logout: "Sign out",
+      email: "Email",
+      password: "Password",
+      name: "Full name",
+      forgotPassword: "Forgot password",
+      resetPassword: "Reset password",
+      noAccount: "Don't have an account?",
+      hasAccount: "Already have an account?",
+      createAccount: "Create account",
+      signIn: "Sign in",
+      sendReset: "Send reset link",
+      orgName: "Organization name",
+      createOrg: "Create organization",
+    },
+    dashboard: {
+      title: "Dashboard",
+      welcome: "Welcome",
+      customers: "Customers",
+      sites: "Sites",
+      devices: "Devices",
+      openTickets: "Open tickets",
+      online: "Online devices",
+      offline: "Offline devices",
+      noOrg: "No active organization",
+      noOrgHint: "Create an organization to start using the platform.",
+      phaseNote: "Phase 1: platform foundation. Modules arrive in later phases.",
+    },
+    common: {
+      loading: "Loading…",
+      save: "Save",
+      cancel: "Cancel",
+      error: "Something went wrong",
+      success: "Success",
+      search: "Search",
+      actions: "Actions",
+      darkMode: "Dark mode",
+      lightMode: "Light mode",
+    },
+    settings: {
+      title: "Settings",
+      organization: "Organization",
+      users: "Users",
+      billing: "Subscription",
+      security: "Security",
+    },
+    comingSoon: {
+      title: "Module coming soon",
+      description: "This module will be available in a later phase. The platform foundation is already active.",
+    },
+  } satisfies Dictionary,
+} as const;
+
+export type Locale = keyof typeof dictionaries;
+
+export function getDictionary(locale: string = "sl"): Dictionary {
+  return locale === "en" ? dictionaries.en : dictionaries.sl;
+}

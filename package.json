@@ -1,0 +1,28 @@
+{
+  "name": "securitydesk",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "pnpm --filter @securitydesk/web dev",
+    "build": "pnpm --filter @securitydesk/web build",
+    "start": "pnpm --filter @securitydesk/web start",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "test:e2e": "pnpm --filter @securitydesk/web test:e2e",
+    "setup": "node scripts/setup.mjs",
+    "db:test": "node scripts/test-database.mjs",
+    "db:generate": "pnpm --filter @securitydesk/database generate",
+    "db:migrate": "pnpm --filter @securitydesk/database migrate",
+    "db:seed": "pnpm --filter @securitydesk/database seed",
+    "agent:dev": "pnpm --filter @securitydesk/agent dev"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.3"
+  }
+}

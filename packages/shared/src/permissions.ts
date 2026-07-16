@@ -1,0 +1,131 @@
+import type { PlatformRole } from "./roles";
+
+/**
+ * Central permission catalog.
+ * Always check permissions on the server — never rely on UI hiding alone.
+ */
+export const PERMISSIONS = [
+  "platform:manage",
+  "organization:manage",
+  "organization:billing",
+  "users:manage",
+  "customers:read",
+  "customers:write",
+  "sites:read",
+  "sites:write",
+  "devices:read",
+  "devices:write",
+  "devices:export",
+  "projects:read",
+  "projects:write",
+  "service:read",
+  "service:write",
+  "handover:read",
+  "handover:write",
+  "network:read",
+  "network:write",
+  "config_vault:read",
+  "config_vault:write",
+  "firmware:read",
+  "firmware:write",
+  "monitoring:read",
+  "monitoring:write",
+  "camera_deploy:read",
+  "camera_deploy:write",
+  "ai:use",
+  "reports:export",
+  "audit:read",
+  "settings:read",
+  "settings:write",
+] as const;
+
+export type Permission = (typeof PERMISSIONS)[number];
+
+const ALL_ORG_PERMISSIONS: Permission[] = PERMISSIONS.filter((p) => p !== "platform:manage");
+
+export const ROLE_PERMISSIONS: Record<PlatformRole, readonly Permission[]> = {
+  platform_super_admin: PERMISSIONS,
+  organization_owner: ALL_ORG_PERMISSIONS,
+  organization_admin: [
+    "users:manage",
+    "customers:read",
+    "customers:write",
+    "sites:read",
+    "sites:write",
+    "devices:read",
+    "devices:write",
+    "devices:export",
+    "projects:read",
+    "projects:write",
+    "service:read",
+    "service:write",
+    "handover:read",
+    "handover:write",
+    "network:read",
+    "network:write",
+    "config_vault:read",
+    "config_vault:write",
+    "firmware:read",
+    "firmware:write",
+    "monitoring:read",
+    "monitoring:write",
+    "camera_deploy:read",
+    "camera_deploy:write",
+    "ai:use",
+    "reports:export",
+    "audit:read",
+    "settings:read",
+    "settings:write",
+  ],
+  technician: [
+    "customers:read",
+    "sites:read",
+    "devices:read",
+    "devices:write",
+    "projects:read",
+    "service:read",
+    "service:write",
+    "handover:read",
+    "network:read",
+    "config_vault:read",
+    "firmware:read",
+    "monitoring:read",
+    "camera_deploy:read",
+    "camera_deploy:write",
+    "ai:use",
+    "settings:read",
+  ],
+  viewer: [
+    "customers:read",
+    "sites:read",
+    "devices:read",
+    "projects:read",
+    "service:read",
+    "handover:read",
+    "network:read",
+    "firmware:read",
+    "monitoring:read",
+    "settings:read",
+  ],
+  customer_user: [
+    "sites:read",
+    "devices:read",
+    "service:read",
+    "service:write",
+    "handover:read",
+  ],
+};
+
+export function hasPermission(role: PlatformRole, permission: Permission): boolean {
+  return ROLE_PERMISSIONS[role].includes(permission);
+}
+
+export function hasAnyPermission(role: PlatformRole, permissions: Permission[]): boolean {
+  return permissions.some((p) => hasPermission(role, p));
+}
+
+export function assertPermission(role: PlatformRole, permission: Permission): void {
+  if (!hasPermission(role, permission)) {
+    throw new Error(`Nimate dovoljenja: ${permission}`);
+  }
+}

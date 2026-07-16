@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_ENV: production
+      APP_NAME: SecurityDesk
+      APP_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_NAME: SecurityDesk
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      APP_TIMEZONE: Europe/Ljubljana
+      DEFAULT_LOCALE: sl
+      DB_PROVIDER: mysql
+      DB_HOST: localhost
+      DB_PORT: "3306"
+      DB_NAME: securitydesk
+      DB_USER: ci
+      DB_PASSWORD: ci-password-not-real
+      DATABASE_URL: mysql://ci:ci-password-not-real@localhost:3306/securitydesk
+      AUTH_SECRET: ci-auth-secret-must-be-at-least-32-chars-long
+      ENCRYPTION_KEY: ci-encryption-key-must-be-32-chars-min!!
+      CRON_SECRET: ci-cron-secret-16+
+      AGENT_SIGNING_SECRET: ci-agent-signing-16+
+      MAIL_DRIVER: console
+      STORAGE_DRIVER: local
+      AI_PROVIDER: disabled
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
