@@ -25,6 +25,13 @@ export function LoginForm({ labels, appName }: { labels: Dictionary["auth"]; app
         setError(formatAuthError(result.error, "Prijava ni uspela."));
         return;
       }
+
+      // New sessions have no activeOrganizationId — restore from memberships.
+      const orgs = await authClient.organization.list();
+      const firstOrg = orgs.data?.[0];
+      if (firstOrg?.id) {
+        await authClient.organization.setActive({ organizationId: firstOrg.id });
+      }
     } catch {
       setError("Prijava ni uspela. Preverite, ali teče `pnpm dev`.");
       return;

@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Badge, Button, EmptyState, Input, buttonVariants, cn } from "@securitydesk/ui";
 import { CAMERA_DEPLOY_SESSION_STATUS_LABELS, hasPermission } from "@securitydesk/shared";

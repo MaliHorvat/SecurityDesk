@@ -1,0 +1,17 @@
+---
+description: After code changes, always commit and push to GitHub automatically
+alwaysApply: true
+---
+
+# Auto commit & push to GitHub
+
+Remote: `https://github.com/MaliHorvat/SecurityDesk` (`origin`, branch `master`).
+
+When you finish a task that changes project files:
+
+1. **Commit** all relevant changes (follow the repo commit protocol: status, diff, log, HEREDOC message, no secrets).
+2. **Push** immediately to `origin` with `git push -u origin HEAD` (or `git push` if tracking exists).
+3. Do this **without asking** — the user requested automatic deploy to GitHub after changes.
+4. Skip only if there is nothing to commit, or the change is purely conversational with no file edits.
+5. Never force-push to `master` unless the user explicitly asks.
+6. After push, briefly confirm with the commit message and that it landed on GitHub.

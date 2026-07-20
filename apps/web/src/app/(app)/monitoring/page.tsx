@@ -1,4 +1,4 @@
-﻿import { Badge, Card, CardContent, CardHeader, CardTitle } from "@securitydesk/ui";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@securitydesk/ui";
 import { hasPermission, MONITORING_CHECK_TYPE_LABELS, MONITORING_HEALTH_LABELS } from "@securitydesk/shared";
 import { requireOrgSession } from "@/lib/org-context";
 import { listDevices } from "@/server/devices";

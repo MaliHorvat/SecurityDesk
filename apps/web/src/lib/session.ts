@@ -1,9 +1,46 @@
 import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { getDb } from "@securitydesk/database";
 import { mapMemberRole, PLANS, type PlatformRole } from "@securitydesk/shared";
 import { getAuth } from "@/lib/auth";
+
+/**
+ * Logout creates a new session without activeOrganizationId.
+ * Restore the earliest membership so the org appears after re-login.
+ */
+async function resolveActiveOrganizationId(
+  userId: string,
+  sessionId: string,
+  currentActiveOrgId: string | null,
+): Promise<string | null> {
+  if (currentActiveOrgId) {
+    return currentActiveOrgId;
+  }
+
+  const { db, schema } = getDb();
+  const [membership] = await db
+    .select({ organizationId: schema.member.organizationId })
+    .from(schema.member)
+    .where(eq(schema.member.userId, userId))
+    .orderBy(asc(schema.member.createdAt))
+    .limit(1);
+
+  if (!membership) {
+    return null;
+  }
+
+  const organizationId = membership.organizationId;
+
+  // Persist on the session row only — avoid Better Auth setActiveOrganization
+  // here because getAppSession runs in RSC where cookies cannot be written.
+  await db
+    .update(schema.session)
+    .set({ activeOrganizationId: organizationId, updatedAt: new Date() })
+    .where(eq(schema.session.id, sessionId));
+
+  return organizationId;
+}
 
 export type AppSession = {
   user: {
@@ -112,7 +149,11 @@ export async function getAppSession(): Promise<AppSession | null> {
     return null;
   }
 
-  const activeOrgId = session.session.activeOrganizationId ?? null;
+  const activeOrgId = await resolveActiveOrganizationId(
+    session.user.id,
+    session.session.id,
+    session.session.activeOrganizationId ?? null,
+  );
   let organization: AppSession["organization"] = null;
   let role: PlatformRole | null = null;
 
