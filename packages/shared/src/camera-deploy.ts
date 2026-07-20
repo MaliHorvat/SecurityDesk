@@ -83,7 +83,12 @@ export function parseIpv4(ip: string): number | null {
   const trimmed = ip.trim();
   const parsed = ipv4Schema.safeParse(trimmed);
   if (!parsed.success) return null;
-  const [a, b, c, d] = trimmed.split(".").map(Number);
+  const parts = trimmed.split(".").map(Number);
+  const a = parts[0];
+  const b = parts[1];
+  const c = parts[2];
+  const d = parts[3];
+  if (a === undefined || b === undefined || c === undefined || d === undefined) return null;
   return ((a << 24) >>> 0) + ((b << 16) >>> 0) + ((c << 8) >>> 0) + (d >>> 0);
 }
 
