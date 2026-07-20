@@ -28,6 +28,9 @@ Uporabljamo `konva` + `react-konva`, ker:
 
 `apps/web/src/lib/storage.ts` — `STORAGE_DRIVER=local|vercel_blob` (+ S3 pripravljeno za kasneje).
 
+Na Vercelu **mora** biti `STORAGE_DRIVER=vercel_blob` + `BLOB_READ_WRITE_TOKEN`.  
+`local` (mapa `.uploads`) deluje samo lokalno — na serverless (`/var/task`) pride do `ENOENT` pri `mkdir`.
+
 ## Migracija
 
 `packages/database/drizzle/mysql/0008_floorplan_digital_twin.sql` (vključuje tudi inventory tabele).

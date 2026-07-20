@@ -49,6 +49,13 @@ export async function putObject(input: {
     throw new Error("S3 storage še ni omogočen v tej različici. Uporabite local ali vercel_blob.");
   }
 
+  // Vercel/serverless has no persistent writable app filesystem (except ephemeral /tmp).
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    throw new Error(
+      "Lokalno shranjevanje (.uploads) ni na voljo v produkciji. Nastavite STORAGE_DRIVER=vercel_blob in BLOB_READ_WRITE_TOKEN.",
+    );
+  }
+
   // local + database (database stores key only; bytes on local disk for now)
   const fullPath = join(localRoot(), key);
   await mkdir(dirname(fullPath), { recursive: true });
