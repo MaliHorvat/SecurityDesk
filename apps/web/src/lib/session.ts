@@ -63,6 +63,13 @@ async function ensureDevPlan(
   organizationId: string,
   currentPlanId: "starter" | "professional" | "integrator" | "enterprise",
 ): Promise<"starter" | "professional" | "integrator" | "enterprise"> {
+  // During the early multi-module rollout we may temporarily lift `starter`
+  // so the sidebar shows all modules.
+  // For Phase 10 billing/plan simulation we only lift when explicitly enabled.
+  if (process.env.DEV_LIFT_STARTER_MODULES !== "true") {
+    return currentPlanId;
+  }
+
   if (currentPlanId !== "starter") return currentPlanId;
 
   const { db, schema } = getDb();

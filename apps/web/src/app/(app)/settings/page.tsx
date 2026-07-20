@@ -2,15 +2,44 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@secu
 import { getAppSession } from "@/lib/session";
 import { getDictionary } from "@/lib/i18n";
 import { redirect } from "next/navigation";
-import { PLANS } from "@securitydesk/shared";
+import { hasPermission, PLANS } from "@securitydesk/shared";
+import { getDb } from "@securitydesk/database";
+import { eq } from "drizzle-orm";
+import { BrandingForm } from "@/components/settings/branding-form";
+import { SubscriptionPlanForm } from "@/components/settings/subscription-plan-form";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
   const session = await getAppSession();
   if (!session) redirect("/login");
-  const t = getDictionary("sl");
+  const { db, schema } = getDb();
+  const orgId = session.organization?.id ?? null;
+
+  const [orgSettings] = orgId
+    ? await db
+        .select()
+        .from(schema.organizationSettings)
+        .where(eq(schema.organizationSettings.organizationId, orgId))
+        .limit(1)
+    : ([] as Array<{ locale: string; brandPrimaryColor: string }>);
+
+  const locale = orgSettings?.locale === "en" ? "en" : "sl";
+  const t = getDictionary(locale);
+
   const plan = session.organization ? PLANS[session.organization.planId] : null;
+  const subscription = orgId
+    ? (
+        await db
+          .select()
+          .from(schema.subscription)
+          .where(eq(schema.subscription.organizationId, orgId))
+          .limit(1)
+      )[0]
+    : null;
+
+  const canBilling = Boolean(session.role && hasPermission(session.role, "organization:billing"));
+  const hasOrg = Boolean(session.organization && orgId);
 
   return (
     <div className="space-y-6">
@@ -38,6 +67,42 @@ export default async function SettingsPage() {
             <p>Stranke: {plan?.limits.maxCustomers ?? "∞"}</p>
             <p>Naprave: {plan?.limits.maxDevices ?? "∞"}</p>
             <p>Moduli: {plan?.limits.modules.length ?? 0}</p>
+
+            <div className="pt-3">
+              {hasOrg && session.organization ? (
+                <>
+                  <SubscriptionPlanForm currentPlanId={session.organization.planId} canEdit={canBilling} />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Naročnina je v tej fazi simulirana (Stripe še ni vklopljen).
+                  </p>
+                  {subscription ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Status: {subscription.status} · Konec obdobja:{" "}
+                      {subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString("sl-SI") : "—"}
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">Še ni aktivne organizacije.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-1">
+          <CardHeader>
+            <CardTitle>White-label</CardTitle>
+            <CardDescription>Barva, ki se uporablja v aplikaciji</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {hasOrg ? (
+              <BrandingForm
+                brandPrimaryColor={orgSettings?.brandPrimaryColor ?? "#1d4ed8"}
+                canEdit={canBilling}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">Še ni aktivne organizacije.</p>
+            )}
           </CardContent>
         </Card>
 
