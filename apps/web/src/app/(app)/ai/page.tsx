@@ -1,5 +1,7 @@
-﻿import { ComingSoonModule } from "@/components/coming-soon";
+﻿import { requireOrgSession } from "@/lib/org-context";
+import { AiTroubleshooterClient } from "@/components/ai/ai-troubleshooter-client";
 
-export default function Page() {
-  return <ComingSoonModule moduleName="AI pomočnik" />;
+export default async function Page() {
+  await requireOrgSession("ai:use");
+  return <AiTroubleshooterClient />;
 }

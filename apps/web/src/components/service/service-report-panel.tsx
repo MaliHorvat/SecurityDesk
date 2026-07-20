@@ -10,6 +10,8 @@ import {
   finalizeServiceReport,
 } from "@/server/service";
 
+import { generateServiceReportAiDraft } from "@/server/ai-troubleshooter";
+
 type Report = {
   id: string;
   title: string;
@@ -61,6 +63,7 @@ export function ServiceReportPanel({
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [aiPending, setAiPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
@@ -84,6 +87,41 @@ export function ServiceReportPanel({
       technicianName: technicianDefault,
     });
     setShowForm(true);
+  }
+
+  function onAiFill() {
+    setError(null);
+    setAiPending(true);
+    startTransition(async () => {
+      const result = await generateServiceReportAiDraft({
+        ticketTitle,
+        faultDescription: form.faultDescription,
+        workPerformed: form.workPerformed,
+        category: "",
+      });
+
+      if (!result.ok) {
+        setError(result.error);
+        setAiPending(false);
+        return;
+      }
+
+      if (!result.data) {
+        setError("AI odgovor je bil prazen.");
+        setAiPending(false);
+        return;
+      }
+
+      const ai = result.data;
+      setForm((prev) => ({
+        ...prev,
+        findings: prev.findings?.trim() ? prev.findings : ai.findings,
+        recommendations: prev.recommendations?.trim() ? prev.recommendations : ai.recommendations,
+        customerSummary: prev.customerSummary?.trim() ? prev.customerSummary : ai.customerSummary,
+      }));
+
+      setAiPending(false);
+    });
   }
 
   function onCreate(e: React.FormEvent) {
@@ -217,6 +255,12 @@ export function ServiceReportPanel({
                   value={form.recommendations}
                   onChange={(e) => setForm({ ...form, recommendations: e.target.value })}
                 />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={aiPending} onClick={onAiFill}>
+                  {aiPending ? "Generiram..." : "AI dopolni"}
+                </Button>
+                <p className="text-xs text-muted-foreground">Dopolnim le, če so polja prazna.</p>
               </div>
               <div className="space-y-2">
                 <Label>Povzetek za stranko</Label>
