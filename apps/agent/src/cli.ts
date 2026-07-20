@@ -49,7 +49,7 @@ function apiBase(): string {
   return base;
 }
 
-function authHeaders(): HeadersInit {
+function authHeaders(): Record<string, string> {
   const token = process.env.AGENT_TOKEN;
   if (!token) throw new Error("Manjka AGENT_TOKEN. Najprej zaženite enroll.");
   return {
