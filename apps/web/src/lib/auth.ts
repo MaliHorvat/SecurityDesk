@@ -1,9 +1,21 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins";
+import { asc, eq } from "drizzle-orm";
 import { getDb } from "@securitydesk/database";
 import { getAppUrl, getPublicAppName, getTrustedOrigins } from "@/lib/app";
 import { sendMail } from "@/lib/mail";
+
+async function resolveMembershipOrganizationId(userId: string): Promise<string | null> {
+  const { db, schema } = getDb();
+  const [membership] = await db
+    .select({ organizationId: schema.member.organizationId })
+    .from(schema.member)
+    .where(eq(schema.member.userId, userId))
+    .orderBy(asc(schema.member.createdAt))
+    .limit(1);
+  return membership?.organizationId ?? null;
+}
 
 function createAuth() {
   const { db, schema, provider } = getDb();
@@ -61,9 +73,31 @@ function createAuth() {
     session: {
       expiresIn: 60 * 60 * 24 * 7,
       updateAge: 60 * 60 * 24,
+      // Cookie cache kept activeOrganizationId stale after logout/login.
       cookieCache: {
-        enabled: true,
-        maxAge: 60 * 5,
+        enabled: false,
+      },
+    },
+    databaseHooks: {
+      session: {
+        create: {
+          // On every new login session, attach the user's organization immediately.
+          before: async (session) => {
+            if (session.activeOrganizationId) {
+              return { data: session };
+            }
+            const organizationId = await resolveMembershipOrganizationId(session.userId);
+            if (!organizationId) {
+              return { data: session };
+            }
+            return {
+              data: {
+                ...session,
+                activeOrganizationId: organizationId,
+              },
+            };
+          },
+        },
       },
     },
     rateLimit: {
@@ -77,7 +111,6 @@ function createAuth() {
     plugins: [
       organization({
         allowUserToCreateOrganization: true,
-        // Better Auth default role name; mapped to organization_owner in app session layer.
         creatorRole: "owner",
         membershipLimit: 100,
         invitationExpiresIn: 60 * 60 * 48,

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from "@securitydesk/ui";
 import { authClient } from "@/lib/auth-client";
 import { formatAuthError } from "@/lib/auth-errors";
+import { restoreActiveOrganizationAction } from "@/server/organization";
 import type { Dictionary } from "@/lib/i18n";
 
 export function LoginForm({ labels, appName }: { labels: Dictionary["auth"]; appName: string }) {
@@ -26,11 +27,10 @@ export function LoginForm({ labels, appName }: { labels: Dictionary["auth"]; app
         return;
       }
 
-      // New sessions have no activeOrganizationId — restore from memberships.
-      const orgs = await authClient.organization.list();
-      const firstOrg = orgs.data?.[0];
-      if (firstOrg?.id) {
-        await authClient.organization.setActive({ organizationId: firstOrg.id });
+      // Attach membership to the new session (DB), not only cookie cache.
+      const restored = await restoreActiveOrganizationAction();
+      if (restored.organizationId) {
+        await authClient.organization.setActive({ organizationId: restored.organizationId });
       }
     } catch {
       setError("Prijava ni uspela. Preverite, ali teče `pnpm dev`.");

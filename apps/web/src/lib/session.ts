@@ -32,8 +32,6 @@ async function resolveActiveOrganizationId(
 
   const organizationId = membership.organizationId;
 
-  // Persist on the session row only — avoid Better Auth setActiveOrganization
-  // here because getAppSession runs in RSC where cookies cannot be written.
   await db
     .update(schema.session)
     .set({ activeOrganizationId: organizationId, updatedAt: new Date() })
@@ -100,9 +98,6 @@ async function ensureDevPlan(
   organizationId: string,
   currentPlanId: "starter" | "professional" | "integrator" | "enterprise",
 ): Promise<"starter" | "professional" | "integrator" | "enterprise"> {
-  // During the early multi-module rollout we may temporarily lift `starter`
-  // so the sidebar shows all modules.
-  // For Phase 10 billing/plan simulation we only lift when explicitly enabled.
   if (process.env.DEV_LIFT_STARTER_MODULES !== "true") {
     return currentPlanId;
   }
@@ -143,6 +138,7 @@ export async function getAppSession(): Promise<AppSession | null> {
   const auth = getAuth();
   const session = await auth.api.getSession({
     headers: await headers(),
+    query: { disableCookieCache: true },
   });
 
   if (!session?.user) {

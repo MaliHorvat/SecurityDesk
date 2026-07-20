@@ -38,7 +38,11 @@ export function OnboardingForm({ labels, appName }: { labels: Dictionary["auth"]
       return;
     }
 
-    await authClient.organization.setActive({ organizationId: result.organizationId });
+    try {
+      await authClient.organization.setActive({ organizationId: result.organizationId });
+    } catch {
+      // Session row already has activeOrganizationId from the server action.
+    }
     setLoading(false);
     router.push("/dashboard");
     router.refresh();
