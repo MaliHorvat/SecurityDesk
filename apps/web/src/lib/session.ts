@@ -98,24 +98,29 @@ async function ensurePlanModuleEntitlements(
   organizationId: string,
   planId: "starter" | "professional" | "integrator" | "enterprise",
 ) {
-  const { db, schema } = getDb();
-  const now = new Date();
-  const existing = await db
-    .select({ moduleId: schema.moduleEntitlement.moduleId })
-    .from(schema.moduleEntitlement)
-    .where(eq(schema.moduleEntitlement.organizationId, organizationId));
-  const have = new Set(existing.map((e: { moduleId: string }) => e.moduleId));
+  try {
+    const { db, schema } = getDb();
+    const now = new Date();
+    const existing = await db
+      .select({ moduleId: schema.moduleEntitlement.moduleId })
+      .from(schema.moduleEntitlement)
+      .where(eq(schema.moduleEntitlement.organizationId, organizationId));
+    const have = new Set(existing.map((e: { moduleId: string }) => e.moduleId));
 
-  for (const moduleId of PLANS[planId].limits.modules) {
-    if (have.has(moduleId)) continue;
-    await db.insert(schema.moduleEntitlement).values({
-      id: randomUUID(),
-      organizationId,
-      moduleId,
-      enabled: true,
-      createdAt: now,
-      updatedAt: now,
-    });
+    for (const moduleId of PLANS[planId].limits.modules) {
+      if (have.has(moduleId)) continue;
+      await db.insert(schema.moduleEntitlement).values({
+        id: randomUUID(),
+        organizationId,
+        moduleId,
+        enabled: true,
+        createdAt: now,
+        updatedAt: now,
+      });
+    }
+  } catch (error) {
+    // Never break login/nav if entitlement backfill fails (unique races, etc.).
+    console.error("[ensurePlanModuleEntitlements]", organizationId, planId, error);
   }
 }
 

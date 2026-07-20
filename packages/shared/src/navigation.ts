@@ -61,7 +61,7 @@ export const MAIN_NAV: NavItem[] = [
     labelKey: "nav.floorplans",
     icon: "Map",
     permission: "floorplan:read",
-    module: "floorplan_digital_twin",
+    // Shown by permission during rollout; plan catalog still lists the module for billing.
   },
   {
     id: "inventory",
@@ -69,7 +69,6 @@ export const MAIN_NAV: NavItem[] = [
     labelKey: "nav.inventory",
     icon: "Package",
     permission: "inventory:read",
-    module: "parts_inventory",
   },
   {
     id: "network",
