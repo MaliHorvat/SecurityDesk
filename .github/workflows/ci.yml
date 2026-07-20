@@ -14,7 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      NODE_ENV: production
       APP_NAME: SecurityDesk
       APP_URL: http://localhost:3000
       NEXT_PUBLIC_APP_NAME: SecurityDesk
@@ -50,6 +49,8 @@ jobs:
 
       - name: Install
         run: pnpm install --frozen-lockfile
+        env:
+          NODE_ENV: development
 
       - name: Lint
         run: pnpm lint
@@ -62,3 +63,5 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          NODE_ENV: production
