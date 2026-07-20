@@ -93,33 +93,20 @@ async function ensureMembership(
   return preferredRole;
 }
 
-/** During multi-module rollout, lift starter orgs so sidebar shows all active modules. */
-async function ensureDevPlan(
+/** Keep module_entitlement rows in sync when plan catalog gains new modules. */
+async function ensurePlanModuleEntitlements(
   organizationId: string,
-  currentPlanId: "starter" | "professional" | "integrator" | "enterprise",
-): Promise<"starter" | "professional" | "integrator" | "enterprise"> {
-  if (process.env.DEV_LIFT_STARTER_MODULES !== "true") {
-    return currentPlanId;
-  }
-
-  if (currentPlanId !== "starter") return currentPlanId;
-
+  planId: "starter" | "professional" | "integrator" | "enterprise",
+) {
   const { db, schema } = getDb();
   const now = new Date();
-  const planId = "integrator" as const;
-
-  await db
-    .update(schema.organization)
-    .set({ planId, updatedAt: now })
-    .where(eq(schema.organization.id, organizationId));
-
   const existing = await db
     .select({ moduleId: schema.moduleEntitlement.moduleId })
     .from(schema.moduleEntitlement)
     .where(eq(schema.moduleEntitlement.organizationId, organizationId));
   const have = new Set(existing.map((e: { moduleId: string }) => e.moduleId));
 
-  for (const moduleId of PLANS.integrator.limits.modules) {
+  for (const moduleId of PLANS[planId].limits.modules) {
     if (have.has(moduleId)) continue;
     await db.insert(schema.moduleEntitlement).values({
       id: randomUUID(),
@@ -130,6 +117,33 @@ async function ensureDevPlan(
       updatedAt: now,
     });
   }
+}
+
+/** During multi-module rollout, lift starter orgs so sidebar shows all active modules. */
+async function ensureDevPlan(
+  organizationId: string,
+  currentPlanId: "starter" | "professional" | "integrator" | "enterprise",
+): Promise<"starter" | "professional" | "integrator" | "enterprise"> {
+  if (process.env.DEV_LIFT_STARTER_MODULES !== "true") {
+    await ensurePlanModuleEntitlements(organizationId, currentPlanId);
+    return currentPlanId;
+  }
+
+  if (currentPlanId !== "starter") {
+    await ensurePlanModuleEntitlements(organizationId, currentPlanId);
+    return currentPlanId;
+  }
+
+  const { db, schema } = getDb();
+  const now = new Date();
+  const planId = "integrator" as const;
+
+  await db
+    .update(schema.organization)
+    .set({ planId, updatedAt: now })
+    .where(eq(schema.organization.id, organizationId));
+
+  await ensurePlanModuleEntitlements(organizationId, planId);
 
   return planId;
 }

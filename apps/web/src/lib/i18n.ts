@@ -18,7 +18,7 @@ export const dictionaries = {
       devices: "Naprave",
       projects: "Projekti",
       cameraDeploy: "CameraDeploy",
-      floorplans: "Digitalni tlorisi",
+      floorplans: "Tlorisi",
       inventory: "Skladišče",
       network: "Omrežje",
       configVault: "ConfigVault",
