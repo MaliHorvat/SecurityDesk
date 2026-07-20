@@ -15,6 +15,8 @@ import * as serviceMysql from "./schema/service-mysql";
 import * as networkMysql from "./schema/network-mysql";
 import * as configVaultMysql from "./schema/config-vault-mysql";
 import * as firmwareGuardMysql from "./schema/firmware-guard-mysql";
+import * as monitoringMysql from "./schema/monitoring-mysql";
+import * as cameraDeployMysql from "./schema/camera-deploy-mysql";
 
 type FullSchema = typeof mysqlSchema &
   typeof securitydeskMysql &
@@ -22,7 +24,9 @@ type FullSchema = typeof mysqlSchema &
   typeof serviceMysql &
   typeof networkMysql &
   typeof configVaultMysql &
-  typeof firmwareGuardMysql;
+  typeof firmwareGuardMysql &
+  typeof monitoringMysql &
+  typeof cameraDeployMysql;
 
 /**
  * Dual MySQL/PostgreSQL client.

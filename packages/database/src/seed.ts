@@ -228,6 +228,105 @@ async function seed() {
   }
 
   const firstCam = seededDevices.find((d) => d.name === "Kamera skladišče 1");
+  const offlineCam = seededDevices.find((d) => d.name === "Kamera offline demo");
+  const rampCam = seededDevices.find((d) => d.name === "Kamera rampa");
+
+  const { sha256Hex } = await import("@securitydesk/shared/crypto");
+  const demoAgentId = randomUUID();
+  await db.insert(schema.monitoringAgent).values({
+    id: demoAgentId,
+    organizationId: orgId,
+    siteId: site1,
+    name: "Demo Agent – Skladišče A",
+    hostname: "sd-agent-demo",
+    version: "0.1.0",
+    tokenHash: sha256Hex("demo-agent-token-not-for-production"),
+    status: "active",
+    lastHeartbeatAt: now,
+    lastIp: "127.0.0.1",
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  if (firstCam) {
+    const checkOnlineId = randomUUID();
+    await db.insert(schema.monitoringCheck).values({
+      id: checkOnlineId,
+      organizationId: orgId,
+      deviceId: firstCam.id,
+      agentId: demoAgentId,
+      name: "Ping – Kamera skladišče 1",
+      checkType: "ping",
+      targetHost: "192.168.10.11",
+      intervalSeconds: 60,
+      timeoutMs: 5000,
+      enabled: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.insert(schema.monitoringCheckResult).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      checkId: checkOnlineId,
+      deviceId: firstCam.id,
+      agentId: demoAgentId,
+      status: "online",
+      latencyMs: 12,
+      message: "Demo rezultat",
+      checkedAt: now,
+      createdAt: now,
+    });
+  }
+
+  if (offlineCam) {
+    const checkOfflineId = randomUUID();
+    await db.insert(schema.monitoringCheck).values({
+      id: checkOfflineId,
+      organizationId: orgId,
+      deviceId: offlineCam.id,
+      agentId: demoAgentId,
+      name: "TCP 80 – Kamera offline",
+      checkType: "tcp",
+      targetHost: "192.168.10.99",
+      targetPort: 80,
+      intervalSeconds: 60,
+      timeoutMs: 5000,
+      enabled: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+    await db.insert(schema.monitoringCheckResult).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      checkId: checkOfflineId,
+      deviceId: offlineCam.id,
+      agentId: demoAgentId,
+      status: "offline",
+      latencyMs: null,
+      message: "Connection timeout",
+      checkedAt: now,
+      createdAt: now,
+    });
+  }
+
+  if (rampCam) {
+    await db.insert(schema.monitoringCheck).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      deviceId: rampCam.id,
+      agentId: demoAgentId,
+      name: "RTSP – Kamera rampa",
+      checkType: "rtsp",
+      targetHost: "192.168.10.13",
+      targetPort: 554,
+      intervalSeconds: 120,
+      timeoutMs: 8000,
+      enabled: true,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   if (firstCam && process.env.ENCRYPTION_KEY) {
     const { encryptSecret, sha256Hex } = await import("@securitydesk/shared/crypto");
     const configText = "# demo switch config\nhostname SW-01\ninterface Gi1/0/1\n description Camera\n";
@@ -431,6 +530,47 @@ async function seed() {
     updatedAt: now,
   });
 
+  const deploySessionId = randomUUID();
+  await db.insert(schema.cameraDeploySession).values({
+    id: deploySessionId,
+    organizationId: orgId,
+    customerId: customerA,
+    siteId: site1,
+    title: "Namestitev kamer – Skladišče A",
+    description: "Demo CameraDeploy seja za 3 nove kamere.",
+    status: "deploying",
+    ipRangeStart: "192.168.10.100",
+    ipRangeEnd: "192.168.10.110",
+    subnetMask: "255.255.255.0",
+    gateway: "192.168.10.1",
+    dnsServers: "8.8.8.8",
+    defaultUsername: "admin",
+    vlanId: 101,
+    createdAt: now,
+    updatedAt: now,
+  });
+
+  const deployTargets = [
+    { name: "Kamera vhod nova", targetIp: "192.168.10.100", status: "deployed" as const, manufacturer: "Axis" },
+    { name: "Kamera skladišče nova", targetIp: "192.168.10.101", status: "configured" as const, manufacturer: "Hikvision" },
+    { name: "Kamera rampa nova", targetIp: "192.168.10.102", status: "pending" as const, manufacturer: "Hikvision" },
+  ];
+  for (const [index, target] of deployTargets.entries()) {
+    await db.insert(schema.cameraDeployTarget).values({
+      id: randomUUID(),
+      organizationId: orgId,
+      sessionId: deploySessionId,
+      name: target.name,
+      manufacturer: target.manufacturer,
+      targetIp: target.targetIp,
+      status: target.status,
+      sortOrder: index,
+      deployedAt: target.status === "deployed" ? now : null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   await db.insert(schema.dashboardStat).values({
     id: randomUUID(),
     organizationId: orgId,
@@ -445,7 +585,7 @@ async function seed() {
 
   console.log("Seed dokončan.");
   console.log(`Organizacija: Aktiva Demo (${orgId})`);
-  console.log("2 stranki, 3 objekti, ~20 naprav, servis, predaja, PortMap, ConfigVault, FirmwareGuard.");
+  console.log("2 stranki, 3 objekti, ~20 naprav, servis, predaja, PortMap, ConfigVault, FirmwareGuard, MultiVMS, CameraDeploy.");
   console.log("Naslednji korak: registracija v aplikaciji in povezava z organizacijo / ročni preizkus CRUD.");
   process.exit(0);
 }

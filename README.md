@@ -14,8 +14,8 @@ Modularna SaaS platforma za podjetja, ki načrtujejo, nameščajo, upravljajo in
 | Servis + HandoverHub | **Faza 4 – aktivna** |
 | PortMap AI | **Faza 5 – aktivna** |
 | ConfigVault + FirmwareGuard | **Faza 6 – aktivna** |
-| Lokalni agent + MultiVMS | Faza 7 |
-| CameraDeploy | Faza 8 |
+| Lokalni agent + MultiVMS | **Faza 7 – aktivna** |
+| CameraDeploy | **Faza 8 – aktivna** |
 | AI Troubleshooter / ServiceReport AI | Faza 9 |
 | Naročnine / white-label | Faza 10 |
 

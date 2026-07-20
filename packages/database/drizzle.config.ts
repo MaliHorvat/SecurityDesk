@@ -18,6 +18,8 @@ export default defineConfig({
           "./src/schema/network-postgresql.ts",
           "./src/schema/config-vault-postgresql.ts",
           "./src/schema/firmware-guard-postgresql.ts",
+          "./src/schema/monitoring-postgresql.ts",
+          "./src/schema/camera-deploy-postgresql.ts",
         ]
       : [
           "./src/schema/mysql.ts",
@@ -27,6 +29,8 @@ export default defineConfig({
           "./src/schema/network-mysql.ts",
           "./src/schema/config-vault-mysql.ts",
           "./src/schema/firmware-guard-mysql.ts",
+          "./src/schema/monitoring-mysql.ts",
+          "./src/schema/camera-deploy-mysql.ts",
         ],
   out: `./drizzle/${provider}`,
   dialect: provider === "postgresql" ? "postgresql" : "mysql",

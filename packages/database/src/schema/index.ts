@@ -20,6 +20,10 @@ export * as configVaultMysql from "./config-vault-mysql";
 export * as configVaultPostgresql from "./config-vault-postgresql";
 export * as firmwareGuardMysql from "./firmware-guard-mysql";
 export * as firmwareGuardPostgresql from "./firmware-guard-postgresql";
+export * as monitoringMysql from "./monitoring-mysql";
+export * as monitoringPostgresql from "./monitoring-postgresql";
+export * as cameraDeployMysql from "./camera-deploy-mysql";
+export * as cameraDeployPostgresql from "./camera-deploy-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -79,3 +83,12 @@ export {
   firmwareMatch,
   remediationCampaign,
 } from "./firmware-guard-mysql";
+
+export {
+  monitoringAgent,
+  agentEnrollmentToken,
+  monitoringCheck,
+  monitoringCheckResult,
+} from "./monitoring-mysql";
+
+export { cameraDeploySession, cameraDeployTarget } from "./camera-deploy-mysql";

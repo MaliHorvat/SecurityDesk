@@ -8,5 +8,7 @@ export * from "./service";
 export * from "./network";
 export * from "./config-vault";
 export * from "./firmware-guard";
+export * from "./monitoring";
+export * from "./camera-deploy";
 // crypto (node:crypto) is exported only via "@securitydesk/shared/crypto"
 // so client bundles never pull Node builtins.
