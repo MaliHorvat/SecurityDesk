@@ -19,6 +19,8 @@ export const APP_CONFIG = {
     "handover_hub",
     "multivms",
     "ai_troubleshooter",
+    "floorplan_digital_twin",
+    "parts_inventory",
   ] as const,
 } as const;
 

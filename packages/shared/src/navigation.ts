@@ -56,6 +56,14 @@ export const MAIN_NAV: NavItem[] = [
     module: "camera_deploy",
   },
   {
+    id: "inventory",
+    href: "/inventory",
+    labelKey: "nav.inventory",
+    icon: "Package",
+    permission: "inventory:read",
+    module: "parts_inventory",
+  },
+  {
     id: "network",
     href: "/network",
     labelKey: "nav.network",

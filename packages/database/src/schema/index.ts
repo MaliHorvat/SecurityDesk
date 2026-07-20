@@ -24,6 +24,8 @@ export * as monitoringMysql from "./monitoring-mysql";
 export * as monitoringPostgresql from "./monitoring-postgresql";
 export * as cameraDeployMysql from "./camera-deploy-mysql";
 export * as cameraDeployPostgresql from "./camera-deploy-postgresql";
+export * as inventoryMysql from "./inventory-mysql";
+export * as inventoryPostgresql from "./inventory-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -92,3 +94,19 @@ export {
 } from "./monitoring-mysql";
 
 export { cameraDeploySession, cameraDeployTarget } from "./camera-deploy-mysql";
+
+export {
+  inventoryCategory,
+  inventoryItem,
+  inventoryLocation,
+  inventoryStock,
+  inventorySerial,
+  inventoryMovement,
+  inventoryReservation,
+  supplier,
+  purchaseOrder,
+  purchaseOrderItem,
+  rmaCase,
+  stocktake,
+  stocktakeItem,
+} from "./inventory-mysql";
