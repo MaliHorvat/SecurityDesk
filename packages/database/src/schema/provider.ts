@@ -16,6 +16,8 @@ import * as monitoringMysql from "./monitoring-mysql";
 import * as monitoringPostgresql from "./monitoring-postgresql";
 import * as cameraDeployMysql from "./camera-deploy-mysql";
 import * as cameraDeployPostgresql from "./camera-deploy-postgresql";
+import * as floorplanMysql from "./floorplan-mysql";
+import * as floorplanPostgresql from "./floorplan-postgresql";
 import * as inventoryMysql from "./inventory-mysql";
 import * as inventoryPostgresql from "./inventory-postgresql";
 
@@ -38,6 +40,7 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
       ...firmwareGuardPostgresql,
       ...monitoringPostgresql,
       ...cameraDeployPostgresql,
+      ...floorplanPostgresql,
       ...inventoryPostgresql,
     };
   }
@@ -51,6 +54,7 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
     ...firmwareGuardMysql,
     ...monitoringMysql,
     ...cameraDeployMysql,
+    ...floorplanMysql,
     ...inventoryMysql,
   };
 }

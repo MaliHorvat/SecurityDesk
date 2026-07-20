@@ -1427,3 +1427,70 @@ export async function listStocktakeItems(stocktakeId: string): Promise<Stocktake
 
   return rows as StocktakeItemRow[];
 }
+
+export async function getDeviceInventoryContext(deviceId: string) {
+  const session = await requireOrgSession("inventory:read");
+  const { db, schema } = getDb();
+  const orgId = session.organization.id;
+
+  const serials = (await db
+    .select({
+      id: schema.inventorySerial.id,
+      serialNumber: schema.inventorySerial.serialNumber,
+      status: schema.inventorySerial.status,
+      warrantyUntil: schema.inventorySerial.warrantyUntil,
+      itemId: schema.inventoryItem.id,
+      itemSku: schema.inventoryItem.sku,
+      itemName: schema.inventoryItem.name,
+      locationId: schema.inventorySerial.currentLocationId,
+      siteId: schema.inventorySerial.siteId,
+    })
+    .from(schema.inventorySerial)
+    .innerJoin(schema.inventoryItem, eq(schema.inventoryItem.id, schema.inventorySerial.inventoryItemId))
+    .where(
+      and(
+        eq(schema.inventorySerial.organizationId, orgId),
+        eq(schema.inventorySerial.deviceId, deviceId),
+      ),
+    )
+    .limit(20)) as Array<{
+    id: string;
+    serialNumber: string;
+    status: string;
+    warrantyUntil: Date | null;
+    itemId: string;
+    itemSku: string;
+    itemName: string;
+    locationId: string | null;
+    siteId: string | null;
+  }>;
+
+  const serialIds = serials.map((s) => s.id);
+  const rmas =
+    serialIds.length > 0
+      ? ((await db
+          .select({
+            id: schema.rmaCase.id,
+            status: schema.rmaCase.status,
+            inventorySerialId: schema.rmaCase.inventorySerialId,
+            reason: schema.rmaCase.reason,
+            createdAt: schema.rmaCase.createdAt,
+          })
+          .from(schema.rmaCase)
+          .where(
+            and(
+              eq(schema.rmaCase.organizationId, orgId),
+              eq(schema.rmaCase.deviceId, deviceId),
+            ),
+          )
+          .limit(20)) as Array<{
+          id: string;
+          status: string;
+          inventorySerialId: string | null;
+          reason: string | null;
+          createdAt: Date;
+        }>)
+      : [];
+
+  return { serials, rmas };
+}

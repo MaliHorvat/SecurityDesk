@@ -8,3 +8,5 @@
 | Console mail driver | Lokalni razvoj brez SMTP | Mailhog, Resend | Produkcija: SMTP env |
 | AI disabled privzeto | Ne sme sesuti aplikacije | Stub provider | Kasneje API ključi na Vercelu |
 | Agent outbound-only stub | Varnost; Faza 7 | — | Agent ne teče na Vercelu |
+| React Konva za FloorPlan | React API, dinamični import, pan/zoom/FOV | Fabric.js | Manjši bundle na editor strani |
+| Inventory append-only movements | Revizijska sled zaloge | Neposredni UPDATE qty | Optimistični `version` na stock |

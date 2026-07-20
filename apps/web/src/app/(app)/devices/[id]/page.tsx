@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle, buttonVariants, cn } from "@securitydesk/ui";
-import { getDevice } from "@/server/devices";
-import { requireOrgSession } from "@/lib/org-context";
 import { hasPermission } from "@securitydesk/shared";
+import { getDevice } from "@/server/devices";
+import { listFloorPlanLinksForDevice } from "@/server/floorplan";
+import { getDeviceInventoryContext } from "@/server/inventory";
+import { requireOrgSession } from "@/lib/org-context";
 import { QrPanel } from "@/components/qr-panel";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +17,11 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
   if (!data) notFound();
   const d = data.device;
   const canWrite = hasPermission(session.role, "devices:write");
+  const canFloorplan = hasPermission(session.role, "floorplan:read");
+  const canInventory = hasPermission(session.role, "inventory:read");
+
+  const floorplanLinks = canFloorplan ? await listFloorPlanLinksForDevice(d.id) : [];
+  const inventoryCtx = canInventory ? await getDeviceInventoryContext(d.id) : { serials: [], rmas: [] };
 
   return (
     <div className="space-y-6">
@@ -83,6 +90,69 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
               <p>Oznake: {d.tags ?? "—"}</p>
             </CardContent>
           </Card>
+          {canFloorplan ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Tloris</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted-foreground">
+                {floorplanLinks.length === 0 ? (
+                  <p>Naprava ni postavljena na tlorisu.</p>
+                ) : (
+                  floorplanLinks.map((link) => (
+                    <p key={link.elementId}>
+                      <Link href={`/floorplans/${link.floorPlanId}`} className="text-primary hover:underline">
+                        {link.floorPlanName}
+                      </Link>
+                      <span>
+                        {" "}
+                        · {link.elementType} @ ({Math.round(link.x)}, {Math.round(link.y)})
+                      </span>
+                    </p>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
+          {canInventory ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Zaloga / RMA</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm text-muted-foreground">
+                {inventoryCtx.serials.length === 0 ? (
+                  <p>Ni povezane serijske enote v inventarju.</p>
+                ) : (
+                  inventoryCtx.serials.map((s) => (
+                    <div key={s.id} className="rounded-md border p-2">
+                      <p>
+                        {s.itemSku} · {s.itemName}
+                      </p>
+                      <p>SN: {s.serialNumber}</p>
+                      <p>Status: {s.status}</p>
+                      <p>
+                        Garancija do:{" "}
+                        {s.warrantyUntil ? new Date(s.warrantyUntil).toLocaleDateString("sl-SI") : "—"}
+                      </p>
+                    </div>
+                  ))
+                )}
+                {inventoryCtx.rmas.length > 0 ? (
+                  <div className="space-y-1 pt-2">
+                    <p className="font-medium text-foreground">RMA</p>
+                    {inventoryCtx.rmas.map((r) => (
+                      <p key={r.id}>
+                        <Link href="/inventory/rma" className="text-primary hover:underline">
+                          {r.status}
+                        </Link>
+                        {r.reason ? ` · ${r.reason}` : ""}
+                      </p>
+                    ))}
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
+          ) : null}
           {d.notes ? (
             <Card className="md:col-span-2">
               <CardHeader>

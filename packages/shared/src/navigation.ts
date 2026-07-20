@@ -56,6 +56,14 @@ export const MAIN_NAV: NavItem[] = [
     module: "camera_deploy",
   },
   {
+    id: "floorplans",
+    href: "/floorplans",
+    labelKey: "nav.floorplans",
+    icon: "Map",
+    permission: "floorplan:read",
+    module: "floorplan_digital_twin",
+  },
+  {
     id: "inventory",
     href: "/inventory",
     labelKey: "nav.inventory",

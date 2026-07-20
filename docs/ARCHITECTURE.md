@@ -35,3 +35,8 @@ Centralni katalog: `@securitydesk/shared` (`ROLE_PERMISSIONS`).
 ## Agent
 
 Agent ne sme izvajati poljubnih shell ukazov. Dovoljeni so samo allowlisted tipi preverjanj (Faza 7).
+
+## Novi moduli
+
+- **FloorPlan Digital Twin** – glej [FLOORPLAN_DIGITAL_TWIN.md](./FLOORPLAN_DIGITAL_TWIN.md) (React Konva)
+- **Parts & Inventory** – glej [PARTS_AND_INVENTORY.md](./PARTS_AND_INVENTORY.md)

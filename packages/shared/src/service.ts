@@ -36,6 +36,8 @@ export const materialItemSchema = z.object({
   quantity: z.coerce.number().positive().default(1),
   unit: z.string().max(32).default("kos"),
   notes: z.string().max(500).optional().or(z.literal("")),
+  inventoryItemId: z.string().min(1).optional().or(z.literal("")),
+  inventorySku: z.string().max(64).optional().or(z.literal("")),
 });
 
 export type MaterialItem = z.infer<typeof materialItemSchema>;

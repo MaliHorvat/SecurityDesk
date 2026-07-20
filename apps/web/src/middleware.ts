@@ -18,6 +18,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/devices") ||
     pathname.startsWith("/projects") ||
     pathname.startsWith("/camera-deploy") ||
+    pathname.startsWith("/floorplans") ||
+    pathname.startsWith("/inventory") ||
     pathname.startsWith("/network") ||
     pathname.startsWith("/config-vault") ||
     pathname.startsWith("/firmware") ||
@@ -53,6 +55,8 @@ export const config = {
     "/devices/:path*",
     "/projects/:path*",
     "/camera-deploy/:path*",
+    "/floorplans/:path*",
+    "/inventory/:path*",
     "/network/:path*",
     "/config-vault/:path*",
     "/firmware/:path*",

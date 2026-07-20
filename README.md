@@ -16,6 +16,8 @@ Modularna SaaS platforma za podjetja, ki načrtujejo, nameščajo, upravljajo in
 | ConfigVault + FirmwareGuard | **Faza 6 – aktivna** |
 | Lokalni agent + MultiVMS | **Faza 7 – aktivna** |
 | CameraDeploy | **Faza 8 – aktivna** |
+| FloorPlan Digital Twin | **aktivna** |
+| Parts & Inventory | **aktivna** |
 | AI Troubleshooter / ServiceReport AI | Faza 9 |
 | Naročnine / white-label | Faza 10 |
 

@@ -83,7 +83,8 @@ function createAuth() {
         create: {
           // On every new login session, attach the user's organization immediately.
           before: async (session) => {
-            if (session.activeOrganizationId) {
+            const current = session as typeof session & { activeOrganizationId?: string | null };
+            if (current.activeOrganizationId) {
               return { data: session };
             }
             const organizationId = await resolveMembershipOrganizationId(session.userId);

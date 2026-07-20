@@ -24,6 +24,8 @@ export * as monitoringMysql from "./monitoring-mysql";
 export * as monitoringPostgresql from "./monitoring-postgresql";
 export * as cameraDeployMysql from "./camera-deploy-mysql";
 export * as cameraDeployPostgresql from "./camera-deploy-postgresql";
+export * as floorplanMysql from "./floorplan-mysql";
+export * as floorplanPostgresql from "./floorplan-postgresql";
 export * as inventoryMysql from "./inventory-mysql";
 export * as inventoryPostgresql from "./inventory-postgresql";
 
@@ -94,6 +96,15 @@ export {
 } from "./monitoring-mysql";
 
 export { cameraDeploySession, cameraDeployTarget } from "./camera-deploy-mysql";
+
+export {
+  floorPlan,
+  floorPlanLayer,
+  floorPlanElement,
+  floorPlanConnection,
+  floorPlanZone,
+  floorPlanVersion,
+} from "./floorplan-mysql";
 
 export {
   inventoryCategory,
