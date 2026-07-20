@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from "@securitydesk/ui";
 import { authClient } from "@/lib/auth-client";
+import { formatAuthError } from "@/lib/auth-errors";
 import type { Dictionary } from "@/lib/i18n";
 
 export function LoginForm({ labels, appName }: { labels: Dictionary["auth"]; appName: string }) {
@@ -18,11 +19,17 @@ export function LoginForm({ labels, appName }: { labels: Dictionary["auth"]; app
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const result = await authClient.signIn.email({ email, password });
-    setLoading(false);
-    if (result.error) {
-      setError(result.error.message || "Prijava ni uspela.");
+    try {
+      const result = await authClient.signIn.email({ email, password });
+      if (result.error) {
+        setError(formatAuthError(result.error, "Prijava ni uspela."));
+        return;
+      }
+    } catch {
+      setError("Prijava ni uspela. Preverite, ali teče `pnpm dev`.");
       return;
+    } finally {
+      setLoading(false);
     }
     router.push("/dashboard");
     router.refresh();

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label } from "@securitydesk/ui";
 import { authClient } from "@/lib/auth-client";
+import { formatAuthError } from "@/lib/auth-errors";
 import type { Dictionary } from "@/lib/i18n";
 
 export function RegisterForm({ labels, appName }: { labels: Dictionary["auth"]; appName: string }) {
@@ -19,26 +20,33 @@ export function RegisterForm({ labels, appName }: { labels: Dictionary["auth"]; 
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const result = await authClient.signUp.email({ name, email, password });
-    if (result.error) {
+    try {
+      const result = await authClient.signUp.email({ name, email, password });
+      if (result.error) {
+        setError(formatAuthError(result.error, "Registracija ni uspela."));
+        return;
+      }
+
+      // Ensure session cookie is established (some setups don't auto-sign-in reliably).
+      const signedIn = await authClient.signIn.email({ email, password });
+      if (signedIn.error) {
+        setError(
+          formatAuthError(
+            signedIn.error,
+            "Račun je ustvarjen, prijava pa ni uspela. Prijavite se ročno, nato ustvarite organizacijo.",
+          ),
+        );
+        router.push("/login?next=/onboarding");
+        return;
+      }
+
+      router.push("/onboarding");
+      router.refresh();
+    } catch {
+      setError("Registracija ni uspela. Preverite, ali teče `pnpm dev`.");
+    } finally {
       setLoading(false);
-      setError(result.error.message || "Registracija ni uspela.");
-      return;
     }
-
-    // Ensure session cookie is established (some setups don't auto-sign-in reliably).
-    const signedIn = await authClient.signIn.email({ email, password });
-    setLoading(false);
-    if (signedIn.error) {
-      setError(
-        "Račun je ustvarjen, prijava pa ni uspela. Prijavite se ročno, nato ustvarite organizacijo.",
-      );
-      router.push("/login?next=/onboarding");
-      return;
-    }
-
-    router.push("/onboarding");
-    router.refresh();
   }
 
   return (

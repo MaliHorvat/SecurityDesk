@@ -2,15 +2,28 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization } from "better-auth/plugins";
 import { getDb } from "@securitydesk/database";
-import { getAppUrl, getPublicAppName } from "@/lib/app";
+import { getAppUrl, getPublicAppName, getTrustedOrigins } from "@/lib/app";
 import { sendMail } from "@/lib/mail";
 
 function createAuth() {
   const { db, schema, provider } = getDb();
 
+  const isProduction = process.env.NODE_ENV === "production";
+
   return betterAuth({
     appName: getPublicAppName(),
     baseURL: getAppUrl(),
+    trustedOrigins: (request) => {
+      const origins = new Set(getTrustedOrigins());
+      const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+      if (host) {
+        origins.add(`https://${host}`);
+        if (!isProduction) {
+          origins.add(`http://${host}`);
+        }
+      }
+      return [...origins];
+    },
     secret: process.env.AUTH_SECRET,
     database: drizzleAdapter(db, {
       provider: provider === "postgresql" ? "pg" : "mysql",
@@ -57,6 +70,9 @@ function createAuth() {
       enabled: true,
       window: 60,
       max: 100,
+    },
+    advanced: {
+      useSecureCookies: isProduction,
     },
     plugins: [
       organization({
