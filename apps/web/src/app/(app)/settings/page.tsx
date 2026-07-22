@@ -1,4 +1,6 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@securitydesk/ui";
+import Link from "next/link";
+import { Rocket } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, buttonVariants, cn } from "@securitydesk/ui";
 import { getAppSession } from "@/lib/session";
 import { getDictionary } from "@/lib/i18n";
 import { redirect } from "next/navigation";
@@ -40,6 +42,7 @@ export default async function SettingsPage() {
 
   const canBilling = Boolean(session.role && hasPermission(session.role, "organization:billing"));
   const hasOrg = Boolean(session.organization && orgId);
+  const canDesktopReleases = Boolean(session.role && hasPermission(session.role, "desktop_releases:read"));
 
   return (
     <div className="space-y-6">
@@ -124,6 +127,22 @@ export default async function SettingsPage() {
             Gesla so varno zgoščena. 2FA in SSO sta predvidena v fazi komercializacije.
           </CardContent>
         </Card>
+
+        {canDesktopReleases ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Izdaje namizne aplikacije</CardTitle>
+              <CardDescription>Upravljanje različic, kanalov in namestitev</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm text-muted-foreground">
+              <p>Objavljajte nove izdaje, nalagajte podpisane namestitvene datoteke in spremljajte nameščene kopije.</p>
+              <Link href="/settings/desktop" className={cn(buttonVariants({ variant: "outline" }))}>
+                <Rocket className="h-4 w-4" />
+                Odpri upravljanje izdaj
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
       </div>
     </div>
   );
