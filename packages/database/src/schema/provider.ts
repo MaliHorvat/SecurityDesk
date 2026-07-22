@@ -20,6 +20,8 @@ import * as floorplanMysql from "./floorplan-mysql";
 import * as floorplanPostgresql from "./floorplan-postgresql";
 import * as inventoryMysql from "./inventory-mysql";
 import * as inventoryPostgresql from "./inventory-postgresql";
+import * as desktopMysql from "./desktop-mysql";
+import * as desktopPostgresql from "./desktop-postgresql";
 
 export type DbProvider = "mysql" | "postgresql";
 
@@ -42,6 +44,7 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
       ...cameraDeployPostgresql,
       ...floorplanPostgresql,
       ...inventoryPostgresql,
+      ...desktopPostgresql,
     };
   }
   return {
@@ -56,5 +59,6 @@ export function getSchema(provider: DbProvider = getProviderFromEnv()) {
     ...cameraDeployMysql,
     ...floorplanMysql,
     ...inventoryMysql,
+    ...desktopMysql,
   };
 }

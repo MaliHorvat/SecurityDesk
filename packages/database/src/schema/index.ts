@@ -28,6 +28,8 @@ export * as floorplanMysql from "./floorplan-mysql";
 export * as floorplanPostgresql from "./floorplan-postgresql";
 export * as inventoryMysql from "./inventory-mysql";
 export * as inventoryPostgresql from "./inventory-postgresql";
+export * as desktopMysql from "./desktop-mysql";
+export * as desktopPostgresql from "./desktop-postgresql";
 
 // Default table exports (MySQL) — used for Better Auth adapter typing & app imports.
 export {
@@ -121,3 +123,11 @@ export {
   stocktake,
   stocktakeItem,
 } from "./inventory-mysql";
+
+export {
+  desktopRelease,
+  desktopReleaseArtifact,
+  desktopInstallation,
+  desktopUpdateEvent,
+  desktopApiToken,
+} from "./desktop-mysql";

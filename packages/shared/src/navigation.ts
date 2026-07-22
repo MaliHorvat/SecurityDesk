@@ -140,6 +140,15 @@ export const MAIN_NAV: NavItem[] = [
     icon: "Settings",
     permission: "settings:read",
   },
+  {
+    id: "desktop-releases",
+    href: "/settings/desktop",
+    labelKey: "nav.desktopReleases",
+    icon: "Rocket",
+    // Platform-level feature: only platform_super_admin holds this permission,
+    // so gating on it alone is sufficient to hide the item from everyone else.
+    permission: "desktop_releases:read",
+  },
 ];
 
 export function getVisibleNav(

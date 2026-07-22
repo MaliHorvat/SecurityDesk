@@ -17,6 +17,7 @@ import {
   MapPin,
   Network,
   Package,
+  Rocket,
   Settings,
   ShieldAlert,
   Wrench,
@@ -42,6 +43,7 @@ const ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   Activity,
   Bot,
   FileBarChart,
+  Rocket,
   Settings,
 };
 

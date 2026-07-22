@@ -29,6 +29,7 @@ export const dictionaries = {
       ai: "AI pomočnik",
       reports: "Poročila",
       settings: "Nastavitve",
+      desktopReleases: "Namizne izdaje",
     },
     auth: {
       login: "Prijava",
@@ -103,6 +104,7 @@ export const dictionaries = {
       ai: "AI Assistant",
       reports: "Reports",
       settings: "Settings",
+      desktopReleases: "Desktop Releases",
     },
     auth: {
       login: "Sign in",

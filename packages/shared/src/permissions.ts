@@ -53,11 +53,23 @@ export const PERMISSIONS = [
   "audit:read",
   "settings:read",
   "settings:write",
+  "desktop_releases:read",
+  "desktop_releases:write",
+  "desktop_releases:publish",
+  "desktop_releases:upload",
+  "desktop_releases:manage",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
 
-const ALL_ORG_PERMISSIONS: Permission[] = PERMISSIONS.filter((p) => p !== "platform:manage");
+/**
+ * Desktop release management is a platform-level capability (managed by
+ * SecurityDesk, not by tenant organizations) — never grant it to org roles,
+ * even ones that otherwise inherit the full permission catalog.
+ */
+const ALL_ORG_PERMISSIONS: Permission[] = PERMISSIONS.filter(
+  (p) => p !== "platform:manage" && !p.startsWith("desktop_releases:"),
+);
 
 export const ROLE_PERMISSIONS: Record<PlatformRole, readonly Permission[]> = {
   platform_super_admin: PERMISSIONS,

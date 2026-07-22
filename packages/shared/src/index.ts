@@ -13,5 +13,6 @@ export * from "./camera-deploy";
 export * from "./floorplan";
 export * from "./inventory";
 export * from "./ai-troubleshooter";
+export * from "./desktop";
 // crypto (node:crypto) is exported only via "@securitydesk/shared/crypto"
 // so client bundles never pull Node builtins.

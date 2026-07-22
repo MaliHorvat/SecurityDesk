@@ -19,6 +19,7 @@ import * as monitoringMysql from "./schema/monitoring-mysql";
 import * as cameraDeployMysql from "./schema/camera-deploy-mysql";
 import * as floorplanMysql from "./schema/floorplan-mysql";
 import * as inventoryMysql from "./schema/inventory-mysql";
+import * as desktopMysql from "./schema/desktop-mysql";
 
 type FullSchema = typeof mysqlSchema &
   typeof securitydeskMysql &
@@ -30,7 +31,8 @@ type FullSchema = typeof mysqlSchema &
   typeof monitoringMysql &
   typeof cameraDeployMysql &
   typeof floorplanMysql &
-  typeof inventoryMysql;
+  typeof inventoryMysql &
+  typeof desktopMysql;
 
 /**
  * Dual MySQL/PostgreSQL client.
