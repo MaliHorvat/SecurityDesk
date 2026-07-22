@@ -55,13 +55,32 @@ Odprite [http://localhost:3000](http://localhost:3000).
 | `pnpm db:test` | Diagnostika povezave z bazo |
 | `pnpm db:migrate` | Migracije |
 | `pnpm agent:dev` | Lokalni agent CLI (stub) |
+| `pnpm desktop:dev` | Namizna app – Vite dev (:1420) |
+| `pnpm desktop:tauri dev` | Namizna app – Tauri okno (zahteva Rust) |
+| `pnpm desktop:tauri build` | Windows NSIS installer (Rust + CI) |
+
+## Namizna aplikacija (Desktop)
+
+Tauri 2 + Vite odjemalec proti `/api/desktop/*` (Bearer tokeni, brez lokalne baze).
+
+| Dokument | Vsebina |
+|----------|---------|
+| [docs/DESKTOP_DEVELOPMENT.md](docs/DESKTOP_DEVELOPMENT.md) | Lokalni zagon, Rust, env |
+| [docs/DESKTOP_ARCHITECTURE.md](docs/DESKTOP_ARCHITECTURE.md) | Ciljna arhitektura |
+| [docs/DESKTOP_BUILD_WINDOWS.md](docs/DESKTOP_BUILD_WINDOWS.md) | NSIS build |
+| [docs/DESKTOP_RELEASES.md](docs/DESKTOP_RELEASES.md) | Admin portal `/settings/desktop` |
+| [docs/DESKTOP_FINAL_REPORT.md](docs/DESKTOP_FINAL_REPORT.md) | Definition of Done |
+
+CI: `.github/workflows/desktop-release.yml` (Windows obvezen; macOS/Linux stub).
 
 ## Struktura monorepo
 
 ```
 apps/web          Next.js SaaS (Vercel)
+apps/desktop      Tauri 2 + Vite namizni odjemalec
 apps/agent        Lokalni agent (outbound-only)
 packages/config   Ime aplikacije + env sheme
+packages/features Deljeni feature moduli (web + desktop)
 packages/shared   Vloge, dovoljenja, paketi, šifriranje
 packages/database Drizzle ORM (MySQL + PostgreSQL)
 packages/ui       UI komponente

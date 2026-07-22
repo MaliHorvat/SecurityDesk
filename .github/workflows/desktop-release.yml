@@ -1,0 +1,128 @@
+name: Desktop Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semver (npr. 1.0.1) – opcijsko; pri tag push se prebere iz ref"
+        required: false
+        type: string
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: desktop-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            platform: windows
+            required: true
+            tauri_args: ""
+          - os: macos-latest
+            platform: macos
+            required: false
+            tauri_args: "--bundles dmg"
+          - os: ubuntu-latest
+            platform: linux
+            required: false
+            tauri_args: "--bundles appimage,deb"
+
+    env:
+      # Produkcijski API URL nastavite v repo Variables ali Secrets pred release buildom.
+      VITE_SECURITYDESK_API_URL: ${{ vars.DESKTOP_API_URL || 'https://placeholder.example.com' }}
+      VITE_API_BASE_URL: ${{ vars.DESKTOP_API_URL || 'https://placeholder.example.com' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            libfuse2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          NODE_ENV: development
+
+      - name: Resolve version from tag
+        id: version
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "value=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref_name }}" == v* ]]; then
+            echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=$(node -p "require('./apps/desktop/package.json').version")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set desktop version
+        run: node scripts/set-desktop-version.mjs "${{ steps.version.outputs.value }}"
+
+      - name: Build Tauri app
+        id: tauri_build
+        uses: tauri-apps/tauri-action@v0
+        continue-on-error: ${{ matrix.required == false }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          projectPath: apps/desktop
+          args: ${{ matrix.tauri_args }}
+
+      - name: Upload bundle artifacts
+        if: steps.tauri_build.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: securitydesk-desktop-${{ matrix.platform }}-${{ steps.version.outputs.value }}
+          path: |
+            apps/desktop/src-tauri/target/release/bundle/**/*
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Fail if required platform failed
+        if: matrix.required && steps.tauri_build.outcome == 'failure'
+        run: |
+          echo "::error::Windows build is required and failed."
+          exit 1
+
+  # Namerno brez joba, ki bi avtomatsko objavil stable v portal ali GitHub Releases.
+  # Admin ročno naloži artefakte v /settings/desktop (glej docs/DESKTOP_RELEASES.md).
