@@ -1,0 +1,34 @@
+[package]
+name = "securitydesk-desktop"
+version = "1.0.0"
+description = "SecurityDesk desktop client"
+authors = ["SecurityDesk"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+# The `_lib` suffix is required to avoid conflicts with the binary target on
+# some platforms (Windows in particular) — see the Tauri 2 project template.
+name = "securitydesk_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-updater = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-process = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+keyring = "3"
+uuid = { version = "1", features = ["v4"] }
+
+[[bin]]
+name = "securitydesk-desktop"
+path = "src/main.rs"

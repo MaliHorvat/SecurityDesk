@@ -3,6 +3,12 @@ import { getSessionCookie } from "better-auth/cookies";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Desktop API is Bearer-token authenticated (see /lib/desktop-auth.ts) — never gate on cookies.
+  if (pathname.startsWith("/api/desktop")) {
+    return NextResponse.next();
+  }
+
   const sessionCookie = getSessionCookie(request);
 
   const isAuthPage =

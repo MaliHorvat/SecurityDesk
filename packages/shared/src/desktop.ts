@@ -129,6 +129,38 @@ export function isInRollout(
   return bucket < rolloutPercentage;
 }
 
+export const desktopLoginRequestSchema = z.object({
+  email: z.string().email("Vnesite veljaven e-poštni naslov."),
+  password: z.string().min(1, "Geslo je obvezno."),
+});
+export type DesktopLoginRequest = z.infer<typeof desktopLoginRequestSchema>;
+
+export const desktopRegisterInstallationSchema = z.object({
+  installationId: z.string().min(1, "Manjka installationId."),
+  platform: desktopPlatformSchema,
+  architecture: desktopArchitectureSchema,
+  osVersion: z.string().max(128).optional().or(z.literal("")),
+  currentVersion: z.string().max(32).optional().or(z.literal("")),
+  channel: desktopChannelSchema.optional(),
+  deviceName: z.string().max(255).optional().or(z.literal("")),
+});
+export type DesktopRegisterInstallationInput = z.infer<typeof desktopRegisterInstallationSchema>;
+
+export const DESKTOP_UPDATE_EVENT_TYPES = ["check", "download", "install", "error"] as const;
+export const desktopUpdateEventTypeSchema = z.enum(DESKTOP_UPDATE_EVENT_TYPES);
+export type DesktopUpdateEventType = z.infer<typeof desktopUpdateEventTypeSchema>;
+
+export const desktopUpdateEventInputSchema = z.object({
+  installationId: z.string().min(1, "Manjka installationId."),
+  eventType: desktopUpdateEventTypeSchema,
+  fromVersion: z.string().max(32).optional().or(z.literal("")),
+  toVersion: z.string().max(32).optional().or(z.literal("")),
+  errorCode: z.string().max(64).optional().or(z.literal("")),
+  errorMessage: z.string().max(2000).optional().or(z.literal("")),
+  metadata: z.record(z.unknown()).optional(),
+});
+export type DesktopUpdateEventInput = z.infer<typeof desktopUpdateEventInputSchema>;
+
 export const desktopUpdateResponseSchema = z.object({
   updateAvailable: z.boolean(),
   version: z.string().max(32).optional(),

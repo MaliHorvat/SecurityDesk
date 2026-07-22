@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 const FORMAT_VERSION = 1;
 
@@ -49,4 +49,30 @@ export function decryptSecret(payload: string, encryptionKey: string): string {
 
 export function sha256Hex(input: string): string {
   return createHash("sha256").update(input, "utf8").digest("hex");
+}
+
+/** Short-lived signed token for one-off resource access (e.g. desktop update downloads). */
+export function createSignedToken(payload: Record<string, unknown>, secret: string, ttlMs: number): string {
+  const body = { ...payload, exp: Date.now() + ttlMs };
+  const encoded = Buffer.from(JSON.stringify(body), "utf8").toString("base64url");
+  const signature = createHmac("sha256", secret).update(encoded).digest("base64url");
+  return `${encoded}.${signature}`;
+}
+
+export function verifySignedToken<T extends Record<string, unknown>>(token: string, secret: string): T | null {
+  const [encoded, signature] = token.split(".");
+  if (!encoded || !signature) return null;
+
+  const expected = createHmac("sha256", secret).update(encoded).digest("base64url");
+  const a = Buffer.from(signature);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
+
+  try {
+    const body = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as T & { exp: number };
+    if (typeof body.exp !== "number" || body.exp < Date.now()) return null;
+    return body;
+  } catch {
+    return null;
+  }
 }

@@ -1,0 +1,15 @@
+# Build output
+dist
+dist-ssr
+*.local
+
+# Tauri (Rust)
+src-tauri/target
+src-tauri/gen
+
+# Editor
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

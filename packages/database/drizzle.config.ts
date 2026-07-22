@@ -22,6 +22,7 @@ export default defineConfig({
           "./src/schema/camera-deploy-postgresql.ts",
           "./src/schema/floorplan-postgresql.ts",
           "./src/schema/inventory-postgresql.ts",
+          "./src/schema/desktop-postgresql.ts",
         ]
       : [
           "./src/schema/mysql.ts",
@@ -35,6 +36,7 @@ export default defineConfig({
           "./src/schema/camera-deploy-mysql.ts",
           "./src/schema/floorplan-mysql.ts",
           "./src/schema/inventory-mysql.ts",
+          "./src/schema/desktop-mysql.ts",
         ],
   out: `./drizzle/${provider}`,
   dialect: provider === "postgresql" ? "postgresql" : "mysql",

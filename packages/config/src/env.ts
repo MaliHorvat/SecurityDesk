@@ -28,6 +28,9 @@ export const serverEnvSchema = z.object({
   CRON_SECRET: z.string().min(16, "Manjka CRON_SECRET. Zaženite pnpm setup."),
   AGENT_SIGNING_SECRET: z.string().min(16, "Manjka AGENT_SIGNING_SECRET. Zaženite pnpm setup."),
 
+  DESKTOP_API_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(90),
+  DESKTOP_DOWNLOAD_TOKEN_TTL_MINUTES: z.coerce.number().int().positive().default(10),
+
   MAIL_DRIVER: z.enum(["console", "smtp"]).default("console"),
   MAIL_FROM_NAME: z.string().default("SecurityDesk"),
   MAIL_FROM_ADDRESS: z.string().email().default("noreply@example.com"),

@@ -16,7 +16,15 @@
     "db:generate": "pnpm --filter @securitydesk/database generate",
     "db:migrate": "pnpm --filter @securitydesk/database migrate",
     "db:seed": "pnpm --filter @securitydesk/database seed",
-    "agent:dev": "pnpm --filter @securitydesk/agent dev"
+    "agent:dev": "pnpm --filter @securitydesk/agent dev",
+    "desktop:dev": "pnpm --filter @securitydesk/desktop dev",
+    "desktop:build": "pnpm --filter @securitydesk/desktop build",
+    "desktop:lint": "pnpm --filter @securitydesk/desktop lint",
+    "desktop:typecheck": "pnpm --filter @securitydesk/desktop typecheck",
+    "desktop:test": "pnpm --filter @securitydesk/desktop test",
+    "desktop:tauri": "pnpm --filter @securitydesk/desktop tauri",
+    "desktop:icons": "pnpm --filter @securitydesk/desktop tauri icon",
+    "desktop:version": "node scripts/set-desktop-version.mjs"
   },
   "engines": {
     "node": ">=20"
