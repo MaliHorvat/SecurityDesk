@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { desktopCorsPreflight, isDesktopApiPath, withDesktopCors } from "@/lib/desktop-cors";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Desktop API is Bearer-token authenticated (see /lib/desktop-auth.ts) — never gate on cookies.
-  if (pathname.startsWith("/api/desktop")) {
-    return NextResponse.next();
+  // Desktop API + health: CORS for Tauri WebView, never gate on cookies.
+  if (isDesktopApiPath(pathname)) {
+    if (request.method === "OPTIONS") {
+      return desktopCorsPreflight(request);
+    }
+    return withDesktopCors(request, NextResponse.next());
   }
 
   const sessionCookie = getSessionCookie(request);
@@ -55,6 +59,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/api/desktop/:path*",
+    "/api/health",
     "/dashboard/:path*",
     "/customers/:path*",
     "/sites/:path*",

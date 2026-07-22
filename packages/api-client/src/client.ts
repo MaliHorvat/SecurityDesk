@@ -207,8 +207,19 @@ export class SecurityDeskApiClient {
     });
   }
 
-  health(): Promise<{ status: string }> {
-    return this.fetchJson<{ status: string }>("/api/health");
+  /**
+   * Lightweight reachability probe. Avoids custom desktop headers so browsers
+   * treat it as a simple request (no CORS preflight) when possible.
+   */
+  async health(): Promise<{ ok?: boolean; status?: string }> {
+    const response = await this.fetchImpl(`${this.baseUrl}/api/health`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) {
+      throw new ApiError(`Health check failed with status ${response.status}`, response.status);
+    }
+    return (await response.json().catch(() => ({ ok: true }))) as { ok?: boolean; status?: string };
   }
 }
 
