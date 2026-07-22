@@ -15,13 +15,14 @@ import {
   MapPin,
   Network,
   Package,
+  Rocket,
   Settings,
   ShieldAlert,
   WifiOff,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
-import { MAIN_NAV } from "@securitydesk/shared";
+import { getVisibleNav, type PlanId, type PlatformRole } from "@securitydesk/shared";
 import { cn } from "@securitydesk/ui";
 import { t } from "@/lib/i18n";
 import { useAuth } from "@/providers/auth-provider";
@@ -45,23 +46,36 @@ const ICONS: Record<string, LucideIcon> = {
   Bot,
   FileBarChart,
   Settings,
+  Rocket,
 };
-
-/** Nav items with a real page implemented in the desktop shell (see src/pages). */
-const DESKTOP_NAV_IDS = new Set(["dashboard", "customers", "sites", "devices", "settings"]);
 
 const NAV_LABELS: Record<string, string> = {
   dashboard: t.nav.dashboard,
   customers: t.nav.customers,
   sites: t.nav.sites,
   devices: t.nav.devices,
+  projects: t.nav.projects,
+  "camera-deploy": t.nav.cameraDeploy,
+  floorplans: t.nav.floorplans,
+  inventory: t.nav.inventory,
+  network: t.nav.network,
+  "config-vault": t.nav.configVault,
+  firmware: t.nav.firmware,
+  service: t.nav.service,
+  handover: t.nav.handover,
+  monitoring: t.nav.monitoring,
+  ai: t.nav.ai,
+  reports: t.nav.reports,
   settings: t.nav.settings,
+  "desktop-releases": t.nav.desktopReleases,
 };
 
 export function Shell() {
   const { session, logout } = useAuth();
   const { isOnline, isServerReachable } = useOffline();
-  const items = MAIN_NAV.filter((item) => DESKTOP_NAV_IDS.has(item.id));
+  const role = (session?.role ?? "viewer") as PlatformRole;
+  const planId = (session?.organization?.planId ?? "integrator") as PlanId;
+  const items = getVisibleNav(role, planId).filter((item) => item.id !== "desktop-releases");
   const showOfflineBanner = !isOnline || isServerReachable === false;
 
   return (
@@ -74,10 +88,11 @@ export function Shell() {
           {items.map((item) => {
             const Icon = ICONS[item.icon] ?? LayoutDashboard;
             const label = NAV_LABELS[item.id] ?? item.id;
+            const to = item.href.replace(/^\//, "");
             return (
               <NavLink
                 key={item.id}
-                to={item.href}
+                to={to || "dashboard"}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
@@ -88,36 +103,34 @@ export function Shell() {
                 }
               >
                 <Icon className="h-4 w-4 shrink-0" />
-                <span>{label}</span>
+                <span className="truncate">{label}</span>
               </NavLink>
             );
           })}
         </nav>
-        <div className="border-t border-border p-3">
+        <div className="space-y-2 border-t border-border p-3">
+          {showOfflineBanner ? (
+            <div className="flex items-center gap-2 rounded-md bg-amber-500/10 px-2 py-1.5 text-xs text-amber-600">
+              <WifiOff className="h-3.5 w-3.5" />
+              Offline
+            </div>
+          ) : null}
+          <div className="truncate px-2 text-xs text-muted-foreground">
+            {session?.organization?.name ?? "—"}
+          </div>
           <button
+            type="button"
             onClick={() => void logout()}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
-            <LogOut className="h-4 w-4 shrink-0" />
-            <span>{t.auth.logout}</span>
+            <LogOut className="h-4 w-4" />
+            {t.auth.logout}
           </button>
         </div>
       </aside>
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
-          <span className="text-sm text-muted-foreground">{session?.organization?.name ?? session?.user.email ?? ""}</span>
-          {showOfflineBanner ? (
-            <span className="flex items-center gap-2 rounded-md bg-destructive/15 px-3 py-1 text-xs font-medium text-destructive">
-              <WifiOff className="h-3.5 w-3.5" />
-              {t.auth.offlineHint}
-            </span>
-          ) : null}
-        </header>
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
-        </main>
-      </div>
+      <main className="min-w-0 flex-1 overflow-auto p-6">
+        <Outlet />
+      </main>
     </div>
   );
 }

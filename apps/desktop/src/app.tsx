@@ -10,6 +10,20 @@ import { CustomersPage } from "@/pages/customers";
 import { SitesPage } from "@/pages/sites";
 import { DevicesPage } from "@/pages/devices";
 import { SettingsDesktopPage } from "@/pages/settings-desktop";
+import {
+  AiPage,
+  CameraDeployPage,
+  ConfigVaultPage,
+  FirmwarePage,
+  FloorplansPage,
+  HandoverPage,
+  InventoryPage,
+  MonitoringPage,
+  NetworkPage,
+  ProjectsPage,
+  ReportsPage,
+  ServicePage,
+} from "@/pages/modules";
 import { t } from "@/lib/i18n";
 
 export function App() {
@@ -50,6 +64,18 @@ function AppRoutes() {
           <Route path="customers" element={<CustomersPage />} />
           <Route path="sites" element={<SitesPage />} />
           <Route path="devices" element={<DevicesPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="camera-deploy" element={<CameraDeployPage />} />
+          <Route path="floorplans" element={<FloorplansPage />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="network" element={<NetworkPage />} />
+          <Route path="config-vault" element={<ConfigVaultPage />} />
+          <Route path="firmware" element={<FirmwarePage />} />
+          <Route path="service" element={<ServicePage />} />
+          <Route path="handover" element={<HandoverPage />} />
+          <Route path="monitoring" element={<MonitoringPage />} />
+          <Route path="ai" element={<AiPage />} />
+          <Route path="reports" element={<ReportsPage />} />
           <Route path="settings" element={<SettingsDesktopPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

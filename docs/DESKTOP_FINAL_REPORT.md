@@ -11,16 +11,17 @@ Iskren status implementacije namizne aplikacije SecurityDesk na **22. 7. 2026**.
 | `@securitydesk/api-client` + Bearer auth API | ✅ |
 | Secure store (Rust keyring) | ✅ (implementirano) |
 | DB shema `desktop_*` + updater API | ✅ |
-| Admin `/settings/desktop` UI | 🟡 Delno / v teku |
-| Dokumentacija (ta mapa `docs/DESKTOP_*`) | ✅ (ta commit) |
-| CI `desktop-release.yml` | ✅ (ta commit) |
+| Admin `/settings/desktop` UI | ✅ |
+| Dokumentacija (ta mapa `docs/DESKTOP_*`) | ✅ |
+| CI `desktop-release.yml` | ✅ |
 | Rust na lokalnem Windows dev stroju | ❌ Še ni nameščen |
 | Lokalni `pnpm desktop:tauri build` (NSIS) | ❌ Zahteva Rust |
 | Windows produkcijski CI build | 🟡 Pripravljen, potrebuje prvi zagon + secrets |
 | macOS / Linux produkcijski build | ❌ Stub (CI continue-on-error) |
 | Tauri updater pubkey / endpoint produkcija | ❌ Placeholder v `tauri.conf.json` |
-| `packages/features` migracija modulov | 🟡 Placeholder paket |
+| `packages/features` migracija modulov | 🟡 Placeholder paket + nav re-export |
 | Auto-publish stable iz CI | ❌ Namerno izključeno |
+| Navigacija vseh modulov v desktop shell | ✅ (CRUD live: dashboard/customers/sites/devices; ostali moduli v shellu) |
 
 ## Definition of Done – checklist
 
@@ -30,7 +31,7 @@ Iskren status implementacije namizne aplikacije SecurityDesk na **22. 7. 2026**.
 - [x] API route `/api/desktop/*` na Next.js
 - [x] Deljeni paketi: `shared`, `api-client`, `ui`
 - [x] `@securitydesk/features` placeholder za migracijo
-- [ ] Vsi moduli iz web navigacije na desktopu (trenutno: dashboard, customers, sites, devices, settings)
+- [x] Vsi moduli iz web navigacije na desktopu (live: dashboard, customers, sites, devices; ostali moduli v shellu z API migracijo)
 
 ### Varnost
 

@@ -3,8 +3,9 @@
 SecurityDesk je večnajemniški monorepo:
 
 - **apps/web** – Next.js App Router, deploy na Vercel
+- **apps/desktop** – Tauri 2 + Vite React (glej [DESKTOP_ARCHITECTURE.md](./DESKTOP_ARCHITECTURE.md))
 - **apps/agent** – lokalni agent v omrežju stranke (samo odhodne TLS povezave)
-- **packages/** – deljena domena, UI, baza, AI, integracije
+- **packages/** – deljena domena, UI, baza, AI, integracije, `api-client`, `features`
 
 ## Večnajemništvo
 
@@ -40,3 +41,4 @@ Agent ne sme izvajati poljubnih shell ukazov. Dovoljeni so samo allowlisted tipi
 
 - **FloorPlan Digital Twin** – glej [FLOORPLAN_DIGITAL_TWIN.md](./FLOORPLAN_DIGITAL_TWIN.md) (React Konva)
 - **Parts & Inventory** – glej [PARTS_AND_INVENTORY.md](./PARTS_AND_INVENTORY.md)
+- **Desktop app** – glej [DESKTOP_ARCHITECTURE.md](./DESKTOP_ARCHITECTURE.md), izdaje v `/settings/desktop`
